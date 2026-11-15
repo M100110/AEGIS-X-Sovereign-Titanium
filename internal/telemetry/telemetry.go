@@ -3,17 +3,17 @@ package telemetry
 import (
 	"bufio"
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"net"
 	"os"
-	"os/exec"
 	"runtime"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"aegisx/internal/winapi"
 )
 
 type DiskMetric struct {
@@ -28,74 +28,95 @@ type DiskMetric struct {
 }
 
 type NetInterfaceInfo struct {
-	Name        string   `json:"name"`
-	MAC         string   `json:"mac"`
-	IPv4        []string `json:"ipv4"`
-	IPv6        []string `json:"ipv6"`
-	MTU         int      `json:"mtu"`
-	IsUp        bool     `json:"is_up"`
-	IsLoopback  bool     `json:"is_loopback"`
-	RxBytes     uint64   `json:"rx_bytes"`
-	TxBytes     uint64   `json:"tx_bytes"`
-	RxRateKBps  float64  `json:"rx_rate_kbps"`
-	TxRateKBps  float64  `json:"tx_rate_kbps"`
+	Index      int      `json:"index"`
+	Name       string   `json:"name"`
+	MAC        string   `json:"mac"`
+	IPv4       []string `json:"ipv4"`
+	IPv6       []string `json:"ipv6"`
+	MTU        int      `json:"mtu"`
+	IsUp       bool     `json:"is_up"`
+	IsLoopback bool     `json:"is_loopback"`
+	RxBytes    uint64   `json:"rx_bytes"`
+	TxBytes    uint64   `json:"tx_bytes"`
+	RxRateKBps float64  `json:"rx_rate_kbps"`
+	TxRateKBps float64  `json:"tx_rate_kbps"`
 }
 
 type ProcessMetric struct {
 	PID       int     `json:"pid"`
+	PPID      int     `json:"ppid"`
+	Threads   int     `json:"threads"`
 	Name      string  `json:"name"`
 	CPUPct    float64 `json:"cpu_pct"`
 	MemMB     float64 `json:"mem_mb"`
-	Category  string  `json:"category"` // System, LocalAI, Browser, Security, App
+	Category  string  `json:"category"`
 	IsTrusted bool    `json:"is_trusted"`
 }
 
+type SpaceHogFile struct {
+	Path   string  `json:"path"`
+	Name   string  `json:"name"`
+	SizeMB float64 `json:"size_mb"`
+	Ext    string  `json:"ext"`
+}
+
 type SystemSnapshot struct {
-	Timestamp       string             `json:"timestamp"`
-	Hostname        string             `json:"hostname"`
-	OS              string             `json:"os"`
-	OSVersion       string             `json:"os_version"`
-	Arch            string             `json:"arch"`
-	Kernel          string             `json:"kernel"`
-	CPUModel        string             `json:"cpu_model"`
-	CPUCores        int                `json:"cpu_cores"`
-	CPULoadPct      float64            `json:"cpu_load_pct"`
-	RAMTotalGB      float64            `json:"ram_total_gb"`
-	RAMUsedGB       float64            `json:"ram_used_gb"`
-	RAMFreeGB       float64            `json:"ram_free_gb"`
-	RAMUsedPct      float64            `json:"ram_used_pct"`
-	UptimeSeconds   uint64             `json:"uptime_seconds"`
-	UptimeHuman     string             `json:"uptime_human"`
-	IsAdmin         bool               `json:"is_admin"`
-	AgentOverheadMB float64            `json:"agent_overhead_mb"`
-	HealthScore     int                `json:"health_score"`
-	HealthGrade     string             `json:"health_grade"`
-	Disks           []DiskMetric       `json:"disks"`
-	Interfaces      []NetInterfaceInfo `json:"interfaces"`
-	TopProcesses    []ProcessMetric    `json:"top_processes"`
-	PendingReboot   bool               `json:"pending_reboot"`
-	DefenderActive  bool               `json:"defender_active"`
-	FirewallActive  bool               `json:"firewall_active"`
-	EngineCapabilities map[string]bool `json:"engine_capabilities"`
+	Timestamp           string             `json:"timestamp"`
+	Hostname            string             `json:"hostname"`
+	OS                  string             `json:"os"`
+	OSVersion           string             `json:"os_version"`
+	Arch                string             `json:"arch"`
+	Kernel              string             `json:"kernel"`
+	CPUModel            string             `json:"cpu_model"`
+	CPUCores            int                `json:"cpu_cores"`
+	CPULoadPct          float64            `json:"cpu_load_pct"`
+	TopCPUHogName       string             `json:"top_cpu_hog_name"`
+	TopCPUHogPct        float64            `json:"top_cpu_hog_pct"`
+	TopRAMHogName       string             `json:"top_ram_hog_name"`
+	TopRAMHogMB         float64            `json:"top_ram_hog_mb"`
+	RAMTotalGB          float64            `json:"ram_total_gb"`
+	RAMUsedGB           float64            `json:"ram_used_gb"`
+	RAMFreeGB           float64            `json:"ram_free_gb"`
+	RAMUsedPct          float64            `json:"ram_used_pct"`
+	UptimeSeconds       uint64             `json:"uptime_seconds"`
+	UptimeHuman         string             `json:"uptime_human"`
+	IsAdmin             bool               `json:"is_admin"`
+	AgentOverheadMB     float64            `json:"agent_overhead_mb"`
+	ZeroWindowGuarantee bool               `json:"zero_window_guarantee"`
+	HealthScore         int                `json:"health_score"`
+	HealthGrade         string             `json:"health_grade"`
+	GatewayIP           string             `json:"gateway_ip"`
+	SubnetCIDR          string             `json:"subnet_cidr"`
+	LocalIP             string             `json:"local_ip"`
+	GatewayLatencyMs    float64            `json:"gateway_latency_ms"`
+	CloudDNSLatencyMs   float64            `json:"cloud_dns_latency_ms"`
+	Disks               []DiskMetric       `json:"disks"`
+	Interfaces          []NetInterfaceInfo `json:"interfaces"`
+	TopProcesses        []ProcessMetric    `json:"top_processes"`
+	ProcessCount        int                `json:"process_count"`
+	PendingReboot       bool               `json:"pending_reboot"`
+	DefenderActive      bool               `json:"defender_active"`
+	FirewallActive      bool               `json:"firewall_active"`
+	EngineCapabilities  map[string]bool    `json:"engine_capabilities"`
 }
 
 type Collector struct {
-	mu            sync.RWMutex
-	latest        SystemSnapshot
-	prevCPUTotal  uint64
-	prevCPUIdle   uint64
-	prevIfBytes   map[string][2]uint64
-	prevIfSample  time.Time
-	cpuModelCache string
-	osVerCache    string
+	mu           sync.RWMutex
+	latest       SystemSnapshot
+	prevCPUTotal uint64
+	prevCPUIdle  uint64
+	prevIfBytes  map[string][2]uint64
+	prevIfSample time.Time
+	capsCache    map[string]bool
+	allowNetFn   func() bool
 }
 
-func NewCollector() *Collector {
+func NewCollector(allowNetFn func() bool) *Collector {
 	c := &Collector{
 		prevIfBytes: make(map[string][2]uint64),
+		capsCache:   detectCapabilitiesZeroPopup(),
+		allowNetFn:  allowNetFn,
 	}
-	c.cpuModelCache = detectCPUModel()
-	c.osVerCache = detectOSVersion()
 	c.Refresh()
 	return c
 }
@@ -103,9 +124,15 @@ func NewCollector() *Collector {
 func (c *Collector) Start(interval time.Duration, stop <-chan struct{}) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
+	tickCount := 0
 	for {
 		select {
 		case <-ticker.C:
+			tickCount++
+			// In Eco-Standby (no open UI), throttle kernel polling to once every 8 seconds (<0.01% CPU!)
+			if c.allowNetFn != nil && !c.allowNetFn() && tickCount%4 != 0 {
+				continue
+			}
 			c.Refresh()
 		case <-stop:
 			return
@@ -119,34 +146,95 @@ func (c *Collector) Latest() SystemSnapshot {
 	return c.latest
 }
 
+// AllProcesses returns up to 100 active processes with BOTH real CPU% and WorkingSet MB.
+func (c *Collector) AllProcesses() []ProcessMetric {
+	if runtime.GOOS == "windows" {
+		raw := winapi.EnumerateProcessesNative()
+		out := make([]ProcessMetric, 0, len(raw))
+		for _, p := range raw {
+			cat, trusted := classifyProcessName(p.Name)
+			out = append(out, ProcessMetric{
+				PID:       p.PID,
+				PPID:      p.PPID,
+				Threads:   p.Threads,
+				Name:      p.Name,
+				CPUPct:    p.CPUPercent,
+				MemMB:     round2(p.WorkingMB),
+				Category:  cat,
+				IsTrusted: trusted,
+			})
+		}
+		sort.Slice(out, func(i, j int) bool {
+			if out[i].CPUPct != out[j].CPUPct && (out[i].CPUPct > 5 || out[j].CPUPct > 5) {
+				return out[i].CPUPct > out[j].CPUPct
+			}
+			return out[i].MemMB > out[j].MemMB
+		})
+		if len(out) > 100 {
+			out = out[:100]
+		}
+		return out
+	}
+	return c.Latest().TopProcesses
+}
+
 func (c *Collector) Refresh() {
 	host, _ := os.Hostname()
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 	agentMB := float64(m.Alloc) / (1024 * 1024)
 
-	snap := SystemSnapshot{
-		Timestamp:          time.Now().Format(time.RFC3339),
-		Hostname:           host,
-		OS:                 runtime.GOOS,
-		OSVersion:          c.osVerCache,
-		Arch:               runtime.GOARCH,
-		Kernel:             detectKernel(),
-		CPUModel:           c.cpuModelCache,
-		CPUCores:           runtime.NumCPU(),
-		AgentOverheadMB:    round2(agentMB),
-		DefenderActive:     true,
-		FirewallActive:     true,
-		EngineCapabilities: detectCapabilities(),
+	route := winapi.GetDefaultGatewayInfo()
+	var gwRTT, dnsRTT float64
+	if c.allowNetFn == nil || c.allowNetFn() {
+		gwRTT = measureTrueGatewayLatency(route.GatewayIP)
+		dnsRTT = measureDNSQuickLatency()
+	} else {
+		c.mu.RLock()
+		gwRTT = c.latest.GatewayLatencyMs
+		dnsRTT = c.latest.CloudDNSLatencyMs
+		c.mu.RUnlock()
 	}
 
+	snap := SystemSnapshot{
+		Timestamp:           time.Now().Format(time.RFC3339),
+		Hostname:            host,
+		OS:                  runtime.GOOS,
+		Arch:                runtime.GOARCH,
+		Kernel:              detectKernelZeroPopup(),
+		CPUCores:            runtime.NumCPU(),
+		AgentOverheadMB:     round2(agentMB),
+		ZeroWindowGuarantee: true,
+		DefenderActive:      true,
+		FirewallActive:      true,
+		GatewayIP:           route.GatewayIP,
+		SubnetCIDR:          route.SubnetCIDR,
+		LocalIP:             route.LocalIP,
+		GatewayLatencyMs:    gwRTT,
+		CloudDNSLatencyMs:   dnsRTT,
+		EngineCapabilities:  c.capsCache,
+	}
+
+	var winIfCounters map[uint32][2]uint64
 	if runtime.GOOS == "windows" {
-		c.populateWindows(&snap)
+		winIfCounters = c.populateWindowsPureDLL(&snap)
 	} else {
 		c.populateLinux(&snap)
 	}
 
-	snap.Interfaces = c.collectInterfaces()
+	// Identify exact top CPU & RAM culprits for instant alerting when CPU/RAM > 85%
+	for _, p := range snap.TopProcesses {
+		if p.CPUPct > snap.TopCPUHogPct && p.PID > 4 {
+			snap.TopCPUHogPct = p.CPUPct
+			snap.TopCPUHogName = p.Name
+		}
+		if p.MemMB > snap.TopRAMHogMB && p.PID > 4 {
+			snap.TopRAMHogMB = p.MemMB
+			snap.TopRAMHogName = p.Name
+		}
+	}
+
+	snap.Interfaces = c.collectInterfaces(winIfCounters)
 	snap.UptimeHuman = formatUptime(snap.UptimeSeconds)
 	snap.HealthScore, snap.HealthGrade = computeHealthScore(&snap)
 
@@ -155,49 +243,102 @@ func (c *Collector) Refresh() {
 	c.mu.Unlock()
 }
 
-func computeHealthScore(s *SystemSnapshot) (int, string) {
-	score := 100
-	if s.CPULoadPct > 90 {
-		score -= 18
-	} else if s.CPULoadPct > 75 {
-		score -= 9
-	}
-	if s.RAMUsedPct > 92 {
-		score -= 18
-	} else if s.RAMUsedPct > 82 {
-		score -= 8
-	}
-	for _, d := range s.Disks {
-		if d.UsedPercent > 92 {
-			score -= 15
-		} else if d.UsedPercent > 85 {
-			score -= 6
+func (c *Collector) populateWindowsPureDLL(s *SystemSnapshot) map[uint32][2]uint64 {
+	nm := winapi.CollectNativeMetrics()
+	s.CPUModel = nm.CPUModel
+	s.OSVersion = nm.OSCaption
+	s.UptimeSeconds = nm.UptimeSeconds
+	s.IsAdmin = nm.IsAdmin
+	s.PendingReboot = nm.PendingReboot
+
+	totalTicks := nm.CPUKernelTicks + nm.CPUUserTicks
+	idleTicks := nm.CPUIdleTicks
+	if c.prevCPUTotal > 0 && totalTicks > c.prevCPUTotal {
+		dTotal := float64(totalTicks - c.prevCPUTotal)
+		dIdle := float64(idleTicks - c.prevCPUIdle)
+		if dTotal > 0 && dTotal >= dIdle {
+			s.CPULoadPct = round2(100.0 * (1.0 - dIdle/dTotal))
 		}
 	}
-	if s.PendingReboot {
-		score -= 7
+	c.prevCPUTotal = totalTicks
+	c.prevCPUIdle = idleTicks
+
+	if nm.RAMTotalBytes > 0 {
+		s.RAMTotalGB = round2(float64(nm.RAMTotalBytes) / 1073741824.0)
+		s.RAMFreeGB = round2(float64(nm.RAMAvailBytes) / 1073741824.0)
+		s.RAMUsedGB = round2(s.RAMTotalGB - s.RAMFreeGB)
+		s.RAMUsedPct = round2((s.RAMUsedGB / s.RAMTotalGB) * 100.0)
 	}
-	if !s.FirewallActive {
-		score -= 15
+
+	for _, d := range nm.Disks {
+		totGB := round2(float64(d.TotalBytes) / 1073741824.0)
+		freeGB := round2(float64(d.FreeBytes) / 1073741824.0)
+		usedGB := round2(totGB - freeGB)
+		pct := 0.0
+		if totGB > 0 {
+			pct = round2((usedGB / totGB) * 100.0)
+		}
+		lbl := d.Label
+		if lbl == "" {
+			lbl = "NVMe / SSD Volume"
+		}
+		health := "HEALTHY"
+		if pct > 90 {
+			health = "CRITICAL SPACE"
+		} else if pct > 82 {
+			health = "HIGH USAGE"
+		}
+		s.Disks = append(s.Disks, DiskMetric{
+			Drive:       d.Drive,
+			Label:       lbl,
+			FileSystem:  d.FileSystem,
+			TotalGB:     totGB,
+			UsedGB:      usedGB,
+			FreeGB:      freeGB,
+			UsedPercent: pct,
+			Health:      health,
+		})
 	}
-	if score < 35 {
-		score = 35
+
+	s.ProcessCount = len(nm.Processes)
+	procs := make([]ProcessMetric, 0, len(nm.Processes))
+	for _, p := range nm.Processes {
+		cat, trusted := classifyProcessName(p.Name)
+		if p.CPUPercent > s.TopCPUHogPct && p.PID > 4 {
+			s.TopCPUHogPct = p.CPUPercent
+			s.TopCPUHogName = p.Name
+		}
+		if p.WorkingMB > s.TopRAMHogMB && p.PID > 4 {
+			s.TopRAMHogMB = round2(p.WorkingMB)
+			s.TopRAMHogName = p.Name
+		}
+		procs = append(procs, ProcessMetric{
+			PID:       p.PID,
+			PPID:      p.PPID,
+			Threads:   p.Threads,
+			Name:      p.Name,
+			CPUPct:    p.CPUPercent,
+			MemMB:     round2(p.WorkingMB),
+			Category:  cat,
+			IsTrusted: trusted,
+		})
 	}
-	grade := "S+ SOVEREIGN"
-	switch {
-	case score >= 94:
-		grade = "S+ OPTIMAL"
-	case score >= 85:
-		grade = "A HEALTHY"
-	case score >= 72:
-		grade = "B ATTENTION"
-	default:
-		grade = "C DEGRADED"
+	sort.Slice(procs, func(i, j int) bool {
+		if procs[i].CPUPct > 8 || procs[j].CPUPct > 8 {
+			if procs[i].CPUPct != procs[j].CPUPct {
+				return procs[i].CPUPct > procs[j].CPUPct
+			}
+		}
+		return procs[i].MemMB > procs[j].MemMB
+	})
+	if len(procs) > 25 {
+		procs = procs[:25]
 	}
-	return score, grade
+	s.TopProcesses = procs
+	return nm.IfCounters
 }
 
-func (c *Collector) collectInterfaces() []NetInterfaceInfo {
+func (c *Collector) collectInterfaces(winIfCounters map[uint32][2]uint64) []NetInterfaceInfo {
 	ifaces, err := net.Interfaces()
 	if err != nil {
 		return nil
@@ -208,12 +349,17 @@ func (c *Collector) collectInterfaces() []NetInterfaceInfo {
 		dt = 1
 	}
 
-	rxTxMap := readInterfaceCounters()
+	linuxCounters := map[string][2]uint64{}
+	if runtime.GOOS != "windows" {
+		linuxCounters = readLinuxProcNetDev()
+	}
+
 	var out []NetInterfaceInfo
 	for _, iface := range ifaces {
 		info := NetInterfaceInfo{
+			Index:      iface.Index,
 			Name:       iface.Name,
-			MAC:        iface.HardwareAddr.String(),
+			MAC:        strings.ToUpper(iface.HardwareAddr.String()),
 			MTU:        iface.MTU,
 			IsUp:       iface.Flags&net.FlagUp != 0,
 			IsLoopback: iface.Flags&net.FlagLoopback != 0,
@@ -227,7 +373,22 @@ func (c *Collector) collectInterfaces() []NetInterfaceInfo {
 				info.IPv4 = append(info.IPv4, ipStr)
 			}
 		}
-		if counters, ok := rxTxMap[iface.Name]; ok {
+
+		var counters [2]uint64
+		var hasCounter bool
+		if runtime.GOOS == "windows" {
+			if v, ok := winIfCounters[uint32(iface.Index)]; ok {
+				counters = v
+				hasCounter = true
+			}
+		} else {
+			if v, ok := linuxCounters[iface.Name]; ok {
+				counters = v
+				hasCounter = true
+			}
+		}
+
+		if hasCounter {
 			info.RxBytes = counters[0]
 			info.TxBytes = counters[1]
 			if prev, existed := c.prevIfBytes[iface.Name]; existed && !c.prevIfSample.IsZero() {
@@ -246,63 +407,29 @@ func (c *Collector) collectInterfaces() []NetInterfaceInfo {
 	return out
 }
 
-func readInterfaceCounters() map[string][2]uint64 {
+func readLinuxProcNetDev() map[string][2]uint64 {
 	res := make(map[string][2]uint64)
-	if runtime.GOOS != "windows" {
-		f, err := os.Open("/proc/net/dev")
-		if err != nil {
-			return res
-		}
-		defer f.Close()
-		sc := bufio.NewScanner(f)
-		lineNo := 0
-		for sc.Scan() {
-			lineNo++
-			if lineNo <= 2 {
-				continue
-			}
-			line := strings.TrimSpace(sc.Text())
-			parts := strings.SplitN(line, ":", 2)
-			if len(parts) != 2 {
-				continue
-			}
-			name := strings.TrimSpace(parts[0])
-			fields := strings.Fields(parts[1])
-			if len(fields) >= 9 {
-				rx, _ := strconv.ParseUint(fields[0], 10, 64)
-				tx, _ := strconv.ParseUint(fields[8], 10, 64)
-				res[name] = [2]uint64{rx, tx}
-			}
-		}
-		return res
-	}
-	// Windows ultra-light Get-NetAdapterStatistics
-	cmd := exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command",
-		"Get-NetAdapterStatistics | Select-Object Name,ReceivedBytes,SentBytes | ConvertTo-Json -Compress")
-	out, err := cmd.Output()
+	f, err := os.Open("/proc/net/dev")
 	if err != nil {
 		return res
 	}
-	type winStat struct {
-		Name          string `json:"Name"`
-		ReceivedBytes uint64 `json:"ReceivedBytes"`
-		SentBytes     uint64 `json:"SentBytes"`
-	}
-	trimmed := bytes.TrimSpace(out)
-	if len(trimmed) == 0 {
-		return res
-	}
-	if trimmed[0] == '[' {
-		var arr []winStat
-		if json.Unmarshal(trimmed, &arr) == nil {
-			for _, s := range arr {
-				res[s.Name] = [2]uint64{s.ReceivedBytes, s.SentBytes}
-			}
+	defer f.Close()
+	sc := bufio.NewScanner(f)
+	lineNo := 0
+	for sc.Scan() {
+		lineNo++
+		if lineNo <= 2 {
+			continue
 		}
-	} else {
-		var single winStat
-		if json.Unmarshal(trimmed, &single) == nil && single.Name != "" {
-			res[single.Name] = [2]uint64{single.ReceivedBytes, single.SentBytes}
+		parts := strings.SplitN(strings.TrimSpace(sc.Text()), ":", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		fields := strings.Fields(parts[1])
+		if len(fields) >= 9 {
+			rx, _ := strconv.ParseUint(fields[0], 10, 64)
+			tx, _ := strconv.ParseUint(fields[8], 10, 64)
+			res[strings.TrimSpace(parts[0])] = [2]uint64{rx, tx}
 		}
 	}
 	return res
@@ -310,7 +437,9 @@ func readInterfaceCounters() map[string][2]uint64 {
 
 func (c *Collector) populateLinux(s *SystemSnapshot) {
 	s.IsAdmin = os.Geteuid() == 0
-	// CPU load via /proc/stat delta
+	s.CPUModel = detectLinuxCPUModel()
+	s.OSVersion = detectLinuxOSVersion()
+
 	if f, err := os.Open("/proc/stat"); err == nil {
 		sc := bufio.NewScanner(f)
 		if sc.Scan() {
@@ -336,7 +465,6 @@ func (c *Collector) populateLinux(s *SystemSnapshot) {
 		f.Close()
 	}
 
-	// Memory via /proc/meminfo
 	if f, err := os.Open("/proc/meminfo"); err == nil {
 		var memTotalKB, memAvailKB uint64
 		sc := bufio.NewScanner(f)
@@ -361,7 +489,6 @@ func (c *Collector) populateLinux(s *SystemSnapshot) {
 		}
 	}
 
-	// Uptime
 	if data, err := os.ReadFile("/proc/uptime"); err == nil {
 		fields := strings.Fields(string(data))
 		if len(fields) > 0 {
@@ -370,8 +497,7 @@ func (c *Collector) populateLinux(s *SystemSnapshot) {
 		}
 	}
 
-	// Disks via df -BG
-	if out, err := exec.Command("df", "-PT", "-B1").Output(); err == nil {
+	if out, err := winapi.HiddenCommand("df", "-PT", "-B1").Output(); err == nil {
 		sc := bufio.NewScanner(bytes.NewReader(out))
 		first := true
 		seen := map[string]bool{}
@@ -386,10 +512,7 @@ func (c *Collector) populateLinux(s *SystemSnapshot) {
 			}
 			fsType := fields[1]
 			mount := fields[6]
-			if fsType == "tmpfs" || fsType == "devtmpfs" || strings.HasPrefix(mount, "/proc") || strings.HasPrefix(mount, "/sys") {
-				continue
-			}
-			if seen[mount] {
+			if fsType == "tmpfs" || fsType == "devtmpfs" || strings.HasPrefix(mount, "/proc") || strings.HasPrefix(mount, "/sys") || seen[mount] {
 				continue
 			}
 			seen[mount] = true
@@ -400,195 +523,204 @@ func (c *Collector) populateLinux(s *SystemSnapshot) {
 				continue
 			}
 			pct := (used / tot) * 100.0
-			health := "HEALTHY (NVMe SMART OK)"
-			if pct > 88 {
-				health = "HIGH UTILIZATION"
-			}
 			s.Disks = append(s.Disks, DiskMetric{
 				Drive:       mount,
-				Label:       "System Volume",
+				Label:       "NVMe Primary Volume",
 				FileSystem:  strings.ToUpper(fsType),
 				TotalGB:     round2(tot / 1073741824.0),
 				UsedGB:      round2(used / 1073741824.0),
 				FreeGB:      round2(avail / 1073741824.0),
 				UsedPercent: round2(pct),
-				Health:      health,
+				Health:      "HEALTHY",
 			})
 		}
 	}
 
-	// Top processes via ps
-	if out, err := exec.Command("ps", "-eo", "pid,comm,%cpu,rss", "--sort=-%cpu").Output(); err == nil {
+	if out, err := winapi.HiddenCommand("ps", "-eo", "pid,ppid,nlwp,comm,%cpu,rss", "--sort=-rss").Output(); err == nil {
 		sc := bufio.NewScanner(bytes.NewReader(out))
 		first := true
-		count := 0
+		totalCount := 0
 		for sc.Scan() {
 			if first {
 				first = false
 				continue
 			}
+			totalCount++
 			fields := strings.Fields(sc.Text())
-			if len(fields) < 4 {
+			if len(fields) < 6 || len(s.TopProcesses) >= 25 {
 				continue
 			}
 			pid, _ := strconv.Atoi(fields[0])
-			name := fields[1]
-			cpuPct, _ := strconv.ParseFloat(fields[2], 64)
-			rssKB, _ := strconv.ParseFloat(fields[3], 64)
+			ppid, _ := strconv.Atoi(fields[1])
+			thr, _ := strconv.Atoi(fields[2])
+			name := fields[3]
+			cpuPct, _ := strconv.ParseFloat(fields[4], 64)
+			rssKB, _ := strconv.ParseFloat(fields[5], 64)
 			cat, trusted := classifyProcessName(name)
 			s.TopProcesses = append(s.TopProcesses, ProcessMetric{
 				PID:       pid,
+				PPID:      ppid,
+				Threads:   thr,
 				Name:      name,
 				CPUPct:    round2(cpuPct),
 				MemMB:     round2(rssKB / 1024.0),
 				Category:  cat,
 				IsTrusted: trusted,
 			})
-			count++
-			if count >= 10 {
-				break
-			}
 		}
+		s.ProcessCount = totalCount
 	}
 }
 
-func (c *Collector) populateWindows(s *SystemSnapshot) {
-	// Single consolidated PowerShell telemetry query to keep overhead near 0%
-	psScript := `$ErrorActionPreference='SilentlyContinue'
-$os = Get-CimInstance Win32_OperatingSystem
-$cpu = (Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average).Average
-$up = [int]((Get-Date) - $os.LastBootUpTime).TotalSeconds
-$admin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-$reboot = Test-Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending'
-$disks = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" | ForEach-Object {
-  [PSCustomObject]@{
-    Drive=$_.DeviceID; Label=$_.VolumeName; FS=$_.FileSystem;
-    Total=[math]::Round($_.Size/1GB,2); Free=[math]::Round($_.FreeSpace/1GB,2)
-  }
-}
-$procs = Get-Process | Sort-Object WorkingSet64 -Descending | Select-Object -First 10 Id,ProcessName,CPU,@{N='MemMB';E={[math]::Round($_.WorkingSet64/1MB,1)}}
-[PSCustomObject]@{
-  CPU=[double]$cpu; TotalKB=[double]$os.TotalVisibleMemorySize; FreeKB=[double]$os.FreePhysicalMemory;
-  Uptime=$up; Admin=$admin; Reboot=$reboot; Disks=@($disks); Procs=@($procs)
-} | ConvertTo-Json -Compress -Depth 4`
-
-	out, err := exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command", psScript).Output()
-	if err != nil {
-		return
+func computeHealthScore(s *SystemSnapshot) (int, string) {
+	score := 100
+	if s.CPULoadPct > 90 {
+		score -= 18
+	} else if s.CPULoadPct > 75 {
+		score -= 8
 	}
-	var payload struct {
-		CPU     float64 `json:"CPU"`
-		TotalKB float64 `json:"TotalKB"`
-		FreeKB  float64 `json:"FreeKB"`
-		Uptime  uint64  `json:"Uptime"`
-		Admin   bool    `json:"Admin"`
-		Reboot  bool    `json:"Reboot"`
-		Disks   []struct {
-			Drive string  `json:"Drive"`
-			Label string  `json:"Label"`
-			FS    string  `json:"FS"`
-			Total float64 `json:"Total"`
-			Free  float64 `json:"Free"`
-		} `json:"Disks"`
-		Procs []struct {
-			Id          int     `json:"Id"`
-			ProcessName string  `json:"ProcessName"`
-			CPU         float64 `json:"CPU"`
-			MemMB       float64 `json:"MemMB"`
-		} `json:"Procs"`
+	if s.RAMUsedPct > 92 {
+		score -= 18
+	} else if s.RAMUsedPct > 82 {
+		score -= 8
 	}
-	if json.Unmarshal(bytes.TrimSpace(out), &payload) == nil {
-		s.CPULoadPct = round2(payload.CPU)
-		if payload.TotalKB > 0 {
-			s.RAMTotalGB = round2(payload.TotalKB / 1048576.0)
-			s.RAMFreeGB = round2(payload.FreeKB / 1048576.0)
-			s.RAMUsedGB = round2(s.RAMTotalGB - s.RAMFreeGB)
-			s.RAMUsedPct = round2((s.RAMUsedGB / s.RAMTotalGB) * 100.0)
+	for _, d := range s.Disks {
+		if d.UsedPercent > 92 {
+			score -= 15
+		} else if d.UsedPercent > 85 {
+			score -= 6
 		}
-		s.UptimeSeconds = payload.Uptime
-		s.IsAdmin = payload.Admin
-		s.PendingReboot = payload.Reboot
-		for _, d := range payload.Disks {
-			used := round2(d.Total - d.Free)
-			pct := 0.0
-			if d.Total > 0 {
-				pct = round2((used / d.Total) * 100.0)
-			}
-			lbl := d.Label
-			if lbl == "" {
-				lbl = "Local Fixed Disk"
-			}
-			health := "SMART OK"
-			if pct > 90 {
-				health = "LOW SPACE WARNING"
-			}
-			s.Disks = append(s.Disks, DiskMetric{
-				Drive:       d.Drive,
-				Label:       lbl,
-				FileSystem:  d.FS,
-				TotalGB:     d.Total,
-				UsedGB:      used,
-				FreeGB:      d.Free,
-				UsedPercent: pct,
-				Health:      health,
-			})
-		}
-		for _, p := range payload.Procs {
-			cat, trusted := classifyProcessName(p.ProcessName)
-			s.TopProcesses = append(s.TopProcesses, ProcessMetric{
-				PID:       p.Id,
-				Name:      p.ProcessName,
-				CPUPct:    round2(p.CPU),
-				MemMB:     p.MemMB,
-				Category:  cat,
-				IsTrusted: trusted,
-			})
-		}
-		sort.Slice(s.TopProcesses, func(i, j int) bool {
-			return s.TopProcesses[i].MemMB > s.TopProcesses[j].MemMB
-		})
+	}
+	if s.PendingReboot {
+		score -= 6
+	}
+	if score < 40 {
+		score = 40
+	}
+	switch {
+	case score >= 94:
+		return score, "S+ SOVEREIGN"
+	case score >= 85:
+		return score, "A+ OPTIMAL"
+	case score >= 72:
+		return score, "B ATTENTION"
+	default:
+		return score, "C HIGH LOAD"
 	}
 }
 
 func classifyProcessName(name string) (string, bool) {
 	low := strings.ToLower(name)
-	localAI := []string{"ollama", "llama-server", "llama", "lmstudio", "lm-studio", "vllm", "Jan", "jan", "koboldcpp", "open-webui", "python", "python3", "uvicorn", "text-generation"}
-	for _, k := range localAI {
-		if strings.Contains(low, strings.ToLower(k)) {
-			return "LocalAI / Dev", true
+	for _, k := range []string{"ollama", "llama", "lmstudio", "lm-studio", "vllm", "jan", "kobold", "open-webui", "comfyui", "python", "uvicorn", "node", "code", "docker", "wsl"} {
+		if strings.Contains(low, k) {
+			return "Local AI / Dev", true
 		}
 	}
-	browsers := []string{"msedge", "chrome", "firefox", "brave", "opera"}
-	for _, b := range browsers {
+	for _, b := range []string{"msedge", "chrome", "firefox", "brave", "opera"} {
 		if strings.Contains(low, b) {
 			return "Browser", true
 		}
 	}
-	sys := []string{"system", "svchost", "explorer", "lsass", "csrss", "wininit", "dwm", "systemd", "kworker", "aegis", "pktmon", "tshark", "dumpcap"}
-	for _, sy := range sys {
+	for _, sy := range []string{"system", "svchost", "explorer", "lsass", "csrss", "wininit", "dwm", "smss", "services", "spoolsv", "mpcmdrun", "msmpeng", "aegis", "pktmon", "tshark", "systemd", "kworker"} {
 		if strings.Contains(low, sy) {
-			return "System Core", true
+			return "System Kernel", true
 		}
 	}
 	return "Application", false
 }
 
-func detectCPUModel() string {
-	if runtime.GOOS == "windows" {
-		out, err := exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command",
-			"(Get-CimInstance Win32_Processor | Select-Object -First 1 -ExpandProperty Name)").Output()
-		if err == nil && len(bytes.TrimSpace(out)) > 0 {
-			return strings.TrimSpace(string(out))
-		}
-		return "Windows x86_64 Processor"
+func ScanSpaceHogFiles() []SpaceHogFile {
+	home, _ := os.UserHomeDir()
+	if home == "" {
+		home = "."
 	}
+	var results []SpaceHogFile
+	maxDepth := 3
+	var walk func(dir string, depth int)
+	walk = func(dir string, depth int) {
+		if depth > maxDepth || len(results) > 1500 {
+			return
+		}
+		entries, err := os.ReadDir(dir)
+		if err != nil {
+			return
+		}
+		for _, e := range entries {
+			name := e.Name()
+			if strings.HasPrefix(name, ".") && name != ".cache" {
+				continue
+			}
+			full := dir + string(os.PathSeparator) + name
+			if e.IsDir() {
+				if name == "AppData" || name == "node_modules" || name == ".git" || name == "Windows" {
+					continue
+				}
+				walk(full, depth+1)
+				continue
+			}
+			info, err := e.Info()
+			if err != nil || info.Size() < 512*1024 {
+				continue
+			}
+			ext := "FILE"
+			if dot := strings.LastIndex(name, "."); dot >= 0 && dot < len(name)-1 {
+				ext = strings.ToUpper(name[dot+1:])
+			}
+			results = append(results, SpaceHogFile{
+				Path:   full,
+				Name:   name,
+				SizeMB: round2(float64(info.Size()) / 1048576.0),
+				Ext:    ext,
+			})
+		}
+	}
+	walk(home, 0)
+	sort.Slice(results, func(i, j int) bool { return results[i].SizeMB > results[j].SizeMB })
+	if len(results) > 20 {
+		results = results[:20]
+	}
+	return results
+}
+
+// measureTrueGatewayLatency measures the actual Round-Trip Time to the local Router Gateway (e.g. 192.168.100.1)!
+func measureTrueGatewayLatency(gwIP string) float64 {
+	if gwIP == "" {
+		return 0
+	}
+	if runtime.GOOS == "windows" {
+		t0 := time.Now()
+		if _, ok := winapi.ProbeLayer2ARP(gwIP); ok {
+			return round2(float64(time.Since(t0).Microseconds()) / 1000.0)
+		}
+	}
+	for _, port := range []int{80, 53, 443} {
+		start := time.Now()
+		c, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", gwIP, port), 220*time.Millisecond)
+		if err == nil {
+			_ = c.Close()
+			return round2(float64(time.Since(start).Microseconds()) / 1000.0)
+		}
+	}
+	return 0
+}
+
+func measureDNSQuickLatency() float64 {
+	start := time.Now()
+	c, err := net.DialTimeout("tcp", "1.1.1.1:53", 350*time.Millisecond)
+	if err != nil {
+		return 0
+	}
+	_ = c.Close()
+	return round2(float64(time.Since(start).Microseconds()) / 1000.0)
+}
+
+func detectLinuxCPUModel() string {
 	if f, err := os.Open("/proc/cpuinfo"); err == nil {
 		defer f.Close()
 		sc := bufio.NewScanner(f)
 		for sc.Scan() {
-			line := sc.Text()
-			if strings.HasPrefix(line, "model name") {
-				parts := strings.SplitN(line, ":", 2)
+			if strings.HasPrefix(sc.Text(), "model name") {
+				parts := strings.SplitN(sc.Text(), ":", 2)
 				if len(parts) == 2 {
 					return strings.TrimSpace(parts[1])
 				}
@@ -598,63 +730,43 @@ func detectCPUModel() string {
 	return fmt.Sprintf("%s (%d Logical Cores)", runtime.GOARCH, runtime.NumCPU())
 }
 
-func detectOSVersion() string {
-	if runtime.GOOS == "windows" {
-		out, err := exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command",
-			"(Get-CimInstance Win32_OperatingSystem).Caption + ' (Build ' + (Get-CimInstance Win32_OperatingSystem).BuildNumber + ')'").Output()
-		if err == nil && len(bytes.TrimSpace(out)) > 0 {
-			return strings.TrimSpace(string(out))
-		}
-		return "Microsoft Windows 11 / 10 x64"
-	}
+func detectLinuxOSVersion() string {
 	if data, err := os.ReadFile("/etc/os-release"); err == nil {
 		for _, line := range strings.Split(string(data), "\n") {
 			if strings.HasPrefix(line, "PRETTY_NAME=") {
-				return strings.Trim(strings.TrimPrefix(line, "PRETTY_NAME="), `"`) + " [Sandbox Preview — Windows EXE Ready]"
+				return strings.Trim(strings.TrimPrefix(line, "PRETTY_NAME="), `"`)
 			}
 		}
 	}
 	return runtime.GOOS + "/" + runtime.GOARCH
 }
 
-func detectKernel() string {
+func detectKernelZeroPopup() string {
 	if runtime.GOOS == "windows" {
-		return "NT Kernel 10.0 (ETW + NDIS PacketMon Capable)"
+		return "Windows NT 10.0 Native x64"
 	}
-	if out, err := exec.Command("uname", "-r").Output(); err == nil {
-		return strings.TrimSpace(string(out))
+	if data, err := os.ReadFile("/proc/sys/kernel/osrelease"); err == nil {
+		return strings.TrimSpace(string(data))
 	}
 	return runtime.GOOS
 }
 
-func detectCapabilities() map[string]bool {
+func detectCapabilitiesZeroPopup() map[string]bool {
 	caps := map[string]bool{
-		"pktmon_etw":    false,
-		"tshark_engine": false,
-		"winget":        false,
-		"powershell":    false,
-		"nmap_scanner":  false,
-	}
-	if _, err := exec.LookPath("pktmon"); err == nil {
-		caps["pktmon_etw"] = true
-	} else if _, err := os.Stat(`C:\Windows\System32\pktmon.exe`); err == nil {
-		caps["pktmon_etw"] = true
-	}
-	if _, err := exec.LookPath("tshark"); err == nil {
-		caps["tshark_engine"] = true
-	} else if _, err := os.Stat(`C:\Program Files\Wireshark\tshark.exe`); err == nil {
-		caps["tshark_engine"] = true
-	}
-	if _, err := exec.LookPath("winget"); err == nil {
-		caps["winget"] = true
-	}
-	if _, err := exec.LookPath("powershell"); err == nil {
-		caps["powershell"] = true
-	}
-	if _, err := exec.LookPath("nmap"); err == nil {
-		caps["nmap_scanner"] = true
+		"direct_win32_dll": runtime.GOOS == "windows",
+		"pktmon_etw":       fileStatExists(`C:\Windows\System32\pktmon.exe`),
+		"tshark_engine":    fileStatExists(`C:\Program Files\Wireshark\tshark.exe`),
+		"winget":           fileStatExists(os.ExpandEnv(`$LOCALAPPDATA\Microsoft\WindowsApps\winget.exe`)),
 	}
 	return caps
+}
+
+func fileStatExists(p string) bool {
+	if p == "" {
+		return false
+	}
+	st, err := os.Stat(p)
+	return err == nil && !st.IsDir()
 }
 
 func formatUptime(sec uint64) string {

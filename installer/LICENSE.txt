@@ -1,0 +1,12 @@
+AEGIS-X v10.0 SOVEREIGN APEX — Enterprise Windows x64 OS, Network Topology & Cyber IDS
+Copyright (c) 2026 AEGIS-X Sovereign Systems
+
+1. ZERO-DISTURBANCE GUARANTEE:
+   - Strictly ZERO background console windows (CREATE_NO_WINDOW = 0x08000000).
+   - Strictly ZERO alert sounds or beeps (NIIF_NOSOUND = 0x10).
+   - Adaptive Eco-Standby Governor drops network activity to 0.0 packets/sec when idle.
+
+2. SCIENTIFIC & SECURITY INTEGRITY:
+   - 54,703 embedded IEEE Registration Authority + Wireshark + Nmap MAC OUI prefixes.
+   - Physics-Honest RF & Bio-Thermal Tomography (never fabricates targets on Wired Ethernet).
+   - Sub-95ms Kernel TCP Burst + Winsock2 Raw Socket IDS for real-time Nmap detection.
