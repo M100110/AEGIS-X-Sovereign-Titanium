@@ -5,4 +5,7 @@
 *.etl
 *.pcapng
 /tmp_*
-/dist/aegisx-linux
+/dist/
+build/certs/
+lan_device_registry.json
+aegisx_server.log
