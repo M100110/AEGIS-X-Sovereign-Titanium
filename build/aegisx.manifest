@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
   <assemblyIdentity
-    version="4.2.0.0"
+    version="9.0.0.0"
     processorArchitecture="amd64"
-    name="AegisX.Sovereign.OSIntelligence"
+    name="AegisX.Sovereign.Ultra"
     type="win32"
   />
-  <description>AEGIS-X Sovereign Windows Autonomous IT Support, ETW/Wireshark Packet Engine &amp; 24/7 Zero-False-Positive Cyber IDS</description>
+  <description>AEGIS-X v9.0 SOVEREIGN ULTRA — 8-Protocol LAN Device Inventory &amp; Bio-Thermal RF Intelligence</description>
   <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
     <security>
       <requestedPrivileges>
@@ -22,7 +22,6 @@
   </asmv3:application>
   <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
     <application>
-      <!-- Windows 10 and Windows 11 -->
       <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>
     </application>
   </compatibility>

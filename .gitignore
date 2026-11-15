@@ -5,4 +5,5 @@
 *.etl
 *.pcapng
 /tmp_*
-/dist/aegisx-linux
+/dist/
+build/certs/

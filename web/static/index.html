@@ -1,46 +1,81 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AEGIS-X Sovereign OS Intelligence | منظومة القيادة السيادية للويندوز</title>
+  <title>AEGIS-X v9.0 SOVEREIGN ULTRA — Network Device Inventory &amp; Bio-Thermal RF Intelligence</title>
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
-  <!-- Ambient Precision Cybernetic Backdrop -->
+  <canvas id="neuralBgCanvas" class="neural-bg-canvas" aria-hidden="true"></canvas>
   <div class="ambient-grid" aria-hidden="true"></div>
-  <div class="ambient-orb orb-cyan" aria-hidden="true"></div>
-  <div class="ambient-orb orb-indigo" aria-hidden="true"></div>
 
-  <!-- Critical Zero-FP Intrusion Toast Banner -->
+  <!-- Silent Visual Toast Container (ZERO Audio / ZERO Ding!) -->
   <div id="threatToastContainer" class="threat-toast-container"></div>
 
+  <!-- First-Run Guided Setup & Engine Verification Wizard + Readiness Modal -->
+  <div id="readinessModal" class="modal-backdrop" style="display:none">
+    <div class="modal-card glass-card">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">AEGIS-X v9.0 SOVEREIGN ULTRA • ENTERPRISE ENGINE &amp; POWER VERIFIER</span>
+          <h3 data-i18n="prereq_modal_title">معالج التحقق من المحركات وإعدادات الإقلاع والطاقة الذكية</h3>
+          <p data-i18n="prereq_modal_sub">يتحقق فعلياً من إصدارات ومسارات المحركات الـ 8 على جهازك، ويتيح التحكم الفوري في وضع السكون الذكي (Eco-Standby: 0% حمل شبكة بالخلفية) والتشغيل مع الويندوز.</p>
+        </div>
+        <button class="btn-mini-action" onclick="window.closeReadinessModal()" data-i18n="btn_close_modal">✕ إغلاق وحفظ</button>
+      </div>
+
+      <!-- Wizard Control Strip: Eco Mode + Start with Windows Switch -->
+      <div class="wizard-control-strip">
+        <div class="wcs-block">
+          <div>
+            <strong data-i18n="wiz_eco_title">نظام إدارة الطاقة والشبكة الذكي (Adaptive Eco-Governor)</strong>
+            <small data-i18n="wiz_eco_desc">يمنع أي فحص للشبكة أو إرهاق للراوتر والمعالج عند إغلاق المتصفح أو عند إقلاع الويندوز (0.0 حزمة/ثانية).</small>
+          </div>
+          <div class="eco-mode-pills">
+            <button class="eco-pill-btn active" data-ecomode="auto_eco" onclick="window.setGovernorMode('auto_eco')" data-i18n="mode_auto_eco">Auto-Eco ذكي (موصى به)</button>
+            <button class="eco-pill-btn" data-ecomode="eco_silent" onclick="window.setGovernorMode('eco_silent')" data-i18n="mode_eco_silent">صامت 0% حزم</button>
+            <button class="eco-pill-btn" data-ecomode="performance_live" onclick="window.setGovernorMode('performance_live')" data-i18n="mode_perf_live">أداء حي مستمر</button>
+          </div>
+        </div>
+
+        <div class="wcs-block">
+          <div>
+            <strong data-i18n="wiz_autostart_title">التشغيل التلقائي مع الويندوز (مغلق افتراضياً لعدم إبطاء الإقلاع)</strong>
+            <small data-i18n="wiz_autostart_desc">عند تفعيله يعمل بخيار <code>-eco-boot</code> بدون أي فحص للشبكة حتى تفتح اللوحة بنفسك.</small>
+          </div>
+          <button class="btn-autostart-toggle" id="modalAutoStartBtn" onclick="window.toggleWindowsAutoStart()">
+            <span id="modalAutoStartTxt">OFF — يدوي فقط</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="prereqInstallBanner" class="lab-result-banner" style="display:none;margin-bottom:14px"></div>
+      <div id="modalReadinessBody" class="prereq-grid"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:16px;gap:10px">
+        <button class="btn-primary-glow" onclick="window.closeReadinessModal()" data-i18n="wiz_finish_btn">✓ اعتماد الإعدادات والدخول للوحة القيادة</button>
+      </div>
+    </div>
+  </div>
+
   <div class="app-shell">
-    <!-- SIDEBAR NAVIGATION -->
+    <!-- ==================== CLEAN EXECUTIVE SIDEBAR (6 SOVEREIGN WORKSPACES) ==================== -->
     <aside class="sidebar">
       <div class="brand-card">
         <div class="brand-logo-wrap">
-          <img src="/assets/aegisx-logo-256.png" alt="AEGIS-X Emblem" class="brand-logo" />
+          <img src="/assets/aegisx-logo-256.png" alt="AEGIS-X" class="brand-logo" />
           <span class="pulse-ring"></span>
         </div>
         <div class="brand-text">
           <div class="brand-title-row">
             <h1>AEGIS-X</h1>
-            <span class="version-pill">v4.2 EXE</span>
+            <span class="version-pill" dir="ltr">v9.0 ULTRA</span>
           </div>
-          <p>Sovereign OS Intelligence</p>
-        </div>
-      </div>
-
-      <div class="zero-load-badge">
-        <div class="zlb-dot"></div>
-        <div>
-          <strong>Zero-Overhead Kernel Mode</strong>
-          <span id="agentOverheadLabel">استهلاك الأداة: 2.1 MB | ضغط الراوتر: 0.0%</span>
+          <p data-i18n="brand_sub">منظومة القيادة السيادية للويندوز والشبكة</p>
         </div>
       </div>
 
@@ -48,197 +83,276 @@
         <button class="nav-item active" data-tab="overview">
           <span class="nav-icon" data-svg="command"></span>
           <div class="nav-labels">
-            <strong>مركز القيادة الشامل</strong>
-            <small>Sovereign Telemetry</small>
+            <strong data-i18n="nav_overview">لوحة القيادة السيادية</strong>
+            <small data-i18n="nav_overview_sub">صحة النظام والبوابة اللحظية</small>
           </div>
+        </button>
+
+        <button class="nav-item" data-tab="network">
+          <span class="nav-icon" data-svg="router"></span>
+          <div class="nav-labels">
+            <strong data-i18n="nav_network">رادار الأجهزة المتصلة بالشبكة</strong>
+            <small data-i18n="nav_network_sub">IP + الاسم + الشركة + رادار حراري</small>
+          </div>
+          <span class="nav-counter cyan" id="navDevicesCount" dir="ltr">--</span>
+        </button>
+
+        <button class="nav-item" data-tab="rfsense">
+          <span class="nav-icon" data-svg="wave"></span>
+          <div class="nav-labels">
+            <strong data-i18n="nav_rfsense">رادار الأجسام الحرارية حول الراوتر</strong>
+            <small data-i18n="nav_rfsense_sub">FLIR Bio-Thermal &amp; Wi-Fi RF</small>
+          </div>
+          <span class="nav-counter emerald" id="navRfBadge" dir="ltr">CLEAR</span>
         </button>
 
         <button class="nav-item" data-tab="itsupport">
           <span class="nav-icon" data-svg="wrench"></span>
           <div class="nav-labels">
-            <strong>الدعم الفني والتحديث الذري</strong>
-            <small>23+ Real Tools &amp; Repair</small>
+            <strong data-i18n="nav_itsupport">مركز الصيانة والعمليات الشامل</strong>
+            <small data-i18n="nav_itsupport_sub">80 أداة صامتة + المعالج والرام</small>
           </div>
-          <span class="nav-counter">23</span>
-        </button>
-
-        <button class="nav-item" data-tab="copilot">
-          <span class="nav-icon" data-svg="brain"></span>
-          <div class="nav-labels">
-            <strong>العقل التشخيصي العبقري</strong>
-            <small>Deterministic Root-Cause AI</small>
-          </div>
-        </button>
-
-        <button class="nav-item" data-tab="network">
-          <span class="nav-icon" data-svg="wireshark"></span>
-          <div class="nav-labels">
-            <strong>محلل الشبكة والبكت المباشر</strong>
-            <small>Wireshark / Pktmon L7</small>
-          </div>
-          <span class="nav-counter cyan" id="navPacketBadge">LIVE</span>
+          <span class="nav-counter cyan" id="navToolsCount" dir="ltr">80</span>
         </button>
 
         <button class="nav-item" data-tab="cyber">
           <span class="nav-icon" data-svg="shield"></span>
           <div class="nav-labels">
-            <strong>الأمن السيبراني 24/7 (0 خطأ)</strong>
-            <small>Zero-FP Nmap &amp; Threat IDS</small>
+            <strong data-i18n="nav_cyber">درع الأمن السيبراني وفحص الراوتر</strong>
+            <small data-i18n="nav_cyber_sub">حماية 24/7 + فحص ثغرات البوابة</small>
           </div>
-          <span class="nav-counter emerald" id="navThreatBadge">0</span>
+          <span class="nav-counter emerald" id="navThreatBadge" dir="ltr">0</span>
+        </button>
+
+        <button class="nav-item" data-tab="copilot">
+          <span class="nav-icon" data-svg="brain"></span>
+          <div class="nav-labels">
+            <strong data-i18n="nav_copilot">المستشار الجنائي الذكي</strong>
+            <small data-i18n="nav_copilot_sub">تشخيص سببي فوري لأعطال جهازك</small>
+          </div>
         </button>
       </nav>
 
-      <!-- Download Real Compiled Windows EXE Card -->
+      <div class="sidebar-status-box">
+        <div class="ssb-row">
+          <span data-i18n="sb_gateway_lbl">بوابة الراوتر</span>
+          <strong id="sbGatewayIP" dir="ltr">--</strong>
+        </div>
+        <div class="ssb-row">
+          <span data-i18n="sb_subnet_lbl">نطاق الشبكة</span>
+          <strong id="sbSubnetCIDR" dir="ltr">--</strong>
+        </div>
+        <div class="ssb-row">
+          <span data-i18n="sb_overhead_lbl">استهلاك المحرك</span>
+          <strong id="agentOverheadLabel" dir="ltr">2.4 MB</strong>
+        </div>
+      </div>
+
+      <!-- DOWNLOAD BOX (Unified Installer + Standalone EXE) -->
       <div class="exe-download-box">
         <div class="exe-header">
-          <img src="/assets/favicon.png" alt="EXE Icon" class="exe-mini-icon" />
+          <img src="/assets/favicon.png" alt="Installer" class="exe-mini-icon" />
           <div>
-            <strong>نسخة الويندوز التنفيذية</strong>
-            <span>AegisX.exe (x64 Native + Icon)</span>
+            <strong data-i18n="dl_box_title">نسخة الويندوز الرسمية الجاهزة</strong>
+            <span dir="ltr">Windows 10 / 11 (x64)</span>
           </div>
         </div>
-        <p>ملف تنفيذي مستقل واحد بأيقونة مدمجة، يفتح تلقائياً على المتصفح بوضع التطبيق فور تشغيله.</p>
-        <a href="/api/download/exe" class="btn-exe-download" id="downloadExeBtn">
+        <a href="/api/download/installer" class="btn-exe-download">
           <span data-svg="download"></span>
-          <span>تحميل AegisX.exe + الأيقونة</span>
+          <span data-i18n="dl_btn_installer">المثبت الرسمي AegisX-Installer.exe</span>
+        </a>
+        <a href="/api/download/exe" class="btn-portable-download">
+          <span data-i18n="dl_btn_portable">أو النسخة الفورية المستقلة AegisX.exe</span>
         </a>
       </div>
     </aside>
 
-    <!-- MAIN WORKSPACE -->
+    <!-- ==================== MAIN WORKSPACE STAGE ==================== -->
     <main class="main-stage">
-      <!-- TOP STATUS BAR -->
+      <!-- CLEAN EXECUTIVE TOPBAR (Zero Jargon, Crisp Alignment) -->
       <header class="topbar">
         <div class="topbar-host">
-          <span class="status-beacon online"></span>
+          <span class="status-beacon" id="hostBeacon"></span>
           <div>
-            <h2 id="hostTitle">جاري الاتصال بالنواة...</h2>
-            <p id="osSubtitle">Initializing Kernel Telemetry &amp; Passive Dissector...</p>
+            <h2 id="hostTitle">جاري قراءة بيانات الجهاز والشبكة...</h2>
+            <p id="osSubtitle" dir="ltr">--</p>
           </div>
         </div>
 
-        <div class="topbar-pills">
-          <div class="metric-chip">
-            <span class="chip-label">حالة الحراسة 24/7</span>
-            <strong class="chip-val emerald" id="topIdsState">ACTIVE • 0 FALSE POSITIVES</strong>
-          </div>
-          <div class="metric-chip">
-            <span class="chip-label">محرك البكت السلبي</span>
-            <strong class="chip-val cyan" id="topNetEngine">Passive Socket/ETW</strong>
-          </div>
-          <button class="btn-quick-omni" id="topOmniUpdateBtn" title="تحديث التطبيقات والويندوز والتعريفات بضغطة واحدة">
-            <span data-svg="bolt"></span>
-            <span>تحديث كل شيء الآن</span>
+        <div class="topbar-actions">
+          <!-- Shown automatically when running as Standard User so 1 click elevates to Admin! -->
+          <button class="btn-elevate-admin" id="elevateAdminBtn" style="display:none" onclick="window.requestAdminElevation()">
+            <span data-svg="shield"></span>
+            <span data-i18n="btn_elevate_admin">ترقية لمسؤول (Admin)</span>
+          </button>
+
+          <!-- Eco-Standby & Boot Control Pill -->
+          <button class="btn-eco-governor" id="topEcoBtn" onclick="window.cycleGovernorMode()" title="Adaptive Eco-Standby Governor (Click to switch mode)">
+            <span data-svg="battery"></span>
+            <span id="topEcoLabel" dir="ltr">Auto-Eco</span>
+          </button>
+
+          <button class="btn-prereq-pill" id="topAutoStartPill" onclick="window.toggleWindowsAutoStart()" title="Toggle Auto-Start with Windows">
+            <span data-svg="rocket"></span>
+            <span id="topAutoStartLabel" data-i18n="top_boot_off">الإقلاع: يدوي</span>
+          </button>
+
+          <button class="btn-quick-ram" onclick="window.instantRamTrim()">
+            <span data-svg="memory"></span>
+            <span data-i18n="top_ram_btn">تحرير الذاكرة (0.1s)</span>
+          </button>
+
+          <button class="btn-prereq-pill" onclick="window.openReadinessModal()">
+            <span data-svg="layers"></span>
+            <span id="topEnginesBtnTxt" data-i18n="top_prereq_btn">المحركات (8)</span>
+          </button>
+
+          <button class="btn-lang-toggle" id="langToggleBtn" onclick="window.toggleLanguage()">
+            <span dir="ltr">EN / عربي</span>
+          </button>
+
+          <button class="btn-shutdown-engine" onclick="window.shutdownAegisEngine()" title="Exit AEGIS-X">
+            <span data-svg="power"></span>
           </button>
         </div>
       </header>
 
-      <!-- ==================== TAB 1: OVERVIEW COMMAND DECK ==================== -->
+      <!-- DYNAMIC BOTTLENECK / SATURATION ALERT BANNER (Appears automatically if CPU >= 85% or RAM >= 85%) -->
+      <div id="criticalLoadBanner" class="critical-load-banner" style="display:none">
+        <div class="clb-left">
+          <span data-svg="alert-triangle"></span>
+          <div id="criticalLoadText"></div>
+        </div>
+        <div class="clb-actions">
+          <button class="btn-primary-glow" onclick="window.instantRamTrim()" data-i18n="btn_rescue_now">تحرير الذاكرة الفوري</button>
+          <button class="btn-secondary-glass" onclick="window.openProcessesSubtab()" data-i18n="btn_view_culprit">فتح مدير العمليات</button>
+        </div>
+      </div>
+
+      <!-- ==================== WORKSPACE 1: SOVEREIGN COMMAND CENTER ==================== -->
       <section class="tab-panel active" id="tab-overview">
         <div class="hero-grid">
-          <!-- Sovereign Health Reactor -->
           <div class="glass-card health-reactor-card">
             <div class="reactor-svg-wrap">
               <svg viewBox="0 0 220 220" class="reactor-svg">
                 <defs>
                   <linearGradient id="healthGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stop-color="#00f0ff" />
-                    <stop offset="55%" stop-color="#34ffb6" />
-                    <stop offset="100%" stop-color="#6366f1" />
+                    <stop offset="50%" stop-color="#34ffb6" />
+                    <stop offset="100%" stop-color="#8b5cf6" />
                   </linearGradient>
                 </defs>
-                <circle cx="110" cy="110" r="92" class="reactor-track" />
-                <circle cx="110" cy="110" r="78" class="reactor-orbit" />
-                <circle cx="110" cy="110" r="92" class="reactor-progress" id="healthGaugeCircle" stroke="url(#healthGrad)" stroke-dasharray="578" stroke-dashoffset="30" />
+                <circle cx="110" cy="110" r="98" class="reactor-outer-ticks" />
+                <circle cx="110" cy="110" r="88" class="reactor-track" />
+                <circle cx="110" cy="110" r="74" class="reactor-orbit" />
+                <circle cx="110" cy="110" r="88" class="reactor-progress" id="healthGaugeCircle" stroke="url(#healthGrad)" stroke-dasharray="553" stroke-dashoffset="20" />
               </svg>
               <div class="reactor-center">
-                <span class="reactor-score" id="healthScoreNum">98</span>
-                <small id="healthGradeText">S+ OPTIMAL</small>
+                <span class="reactor-score" id="healthScoreNum" dir="ltr">98</span>
+                <small id="healthGradeText" dir="ltr">S+ SOVEREIGN</small>
               </div>
             </div>
+
             <div class="reactor-details">
-              <span class="eyebrow">مؤشر الصحة السيادية للجهاز</span>
-              <h3>تحليل حي بدون استنزاف موارد الجهاز</h3>
-              <p id="uptimeSummary">مدة التشغيل المستمر: -- | الصلاحيات: فحص فوري</p>
+              <span class="eyebrow" data-i18n="hero_eyebrow">SOVEREIGN SYSTEM &amp; NETWORK TELEMETRY</span>
+              <h3 data-i18n="hero_title">مركز القيادة والتحكم الفوري بالنظام والشبكة</h3>
+              <p id="uptimeSummary">--</p>
               <div class="hero-action-row">
                 <button class="btn-primary-glow" onclick="window.triggerITTool('omni_self_heal')">
                   <span data-svg="sparkles"></span>
-                  <span>الإصلاح الذاتي الذكي</span>
+                  <span data-i18n="hero_heal_btn">الإصلاح الذاتي الشامل</span>
                 </button>
-                <button class="btn-secondary-glass" onclick="window.switchTab('copilot')">
-                  <span data-svg="brain"></span>
-                  <span>اسأل المحلل العبقري</span>
+                <button class="btn-secondary-glass" onclick="window.triggerITTool('omni_update_everything')">
+                  <span data-svg="bolt"></span>
+                  <span data-i18n="hero_omni_btn">تحديث كل شيء بصمت</span>
+                </button>
+                <button class="btn-secondary-glass" onclick="window.switchTab('network')">
+                  <span data-svg="router"></span>
+                  <span data-i18n="hero_map_btn">خريطة الراوتر والأجهزة</span>
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- Real-Time Hardware Gauges -->
           <div class="kpi-quad-grid">
-            <div class="glass-card kpi-card">
+            <!-- CPU Card -->
+            <div class="glass-card kpi-card" id="cpuKpiCard">
               <div class="kpi-head">
-                <span>المعالج المركزي (CPU)</span>
+                <span data-i18n="kpi_cpu">المعالج المركزي</span>
                 <span class="kpi-icon cyan" data-svg="cpu"></span>
               </div>
               <div class="kpi-value-row">
-                <strong id="cpuPctVal">0.0%</strong>
-                <small id="cpuCoresLabel">-- Cores</small>
+                <strong id="cpuPctVal" dir="ltr">0.0%</strong>
+                <small id="cpuCoresLabel" dir="ltr">-- Cores</small>
               </div>
-              <div class="progress-rail"><div class="progress-fill cyan" id="cpuBar" style="width:8%"></div></div>
-              <p class="kpi-sub" id="cpuModelLabel">--</p>
+              <canvas id="cpuHistoryCanvas" width="260" height="38" class="spark-canvas"></canvas>
+              <p class="kpi-sub" id="cpuModelLabel" dir="ltr">--</p>
             </div>
 
-            <div class="glass-card kpi-card">
+            <!-- RAM Card -->
+            <div class="glass-card kpi-card" id="ramKpiCard">
               <div class="kpi-head">
-                <span>الذاكرة العشوائية (RAM)</span>
+                <span data-i18n="kpi_ram">الذاكرة العشوائية (RAM)</span>
                 <span class="kpi-icon violet" data-svg="memory"></span>
               </div>
               <div class="kpi-value-row">
-                <strong id="ramPctVal">0.0%</strong>
-                <small id="ramUsedLabel">0 / 0 GB</small>
+                <strong id="ramPctVal" dir="ltr">0.0%</strong>
+                <small id="ramUsedLabel" dir="ltr">0 / 0 GB</small>
               </div>
-              <div class="progress-rail"><div class="progress-fill violet" id="ramBar" style="width:20%"></div></div>
-              <p class="kpi-sub">إدارة Working-Set ذكية بدون قتل البرامج</p>
+              <canvas id="ramHistoryCanvas" width="260" height="38" class="spark-canvas"></canvas>
+              <p class="kpi-sub" id="ramHogLabel" data-i18n="kpi_ram_sub">اضغط تحرير الذاكرة لتفريغ البرامج الخاملة</p>
             </div>
 
-            <div class="glass-card kpi-card">
+            <!-- Real Router & Subnet Card -->
+            <div class="glass-card kpi-card" style="cursor:pointer" onclick="window.switchTab('network')">
               <div class="kpi-head">
-                <span>تدفق الشبكة السلبي (Zero-Load)</span>
-                <span class="kpi-icon emerald" data-svg="wireshark"></span>
+                <span data-i18n="kpi_router">بوابة الراوتر ونطاق الشبكة</span>
+                <span class="kpi-icon emerald" data-svg="router"></span>
               </div>
               <div class="kpi-value-row">
-                <strong id="netRateVal">0.0 KB/s</strong>
-                <small id="activeFlowsVal">0 Flows</small>
+                <strong id="overviewGatewayIP" dir="ltr" style="font-size:1.2rem">--</strong>
+                <small id="overviewGatewayRTT" dir="ltr" class="emerald-text">-- ms</small>
               </div>
-              <canvas id="netSparkCanvas" width="260" height="42" class="spark-canvas"></canvas>
-              <p class="kpi-sub">صفر حزم استعلام إضافية على الراوتر</p>
+              <div class="router-mini-meta">
+                <span class="tag-pill tag-sys" id="overviewSubnetBadge" dir="ltr">Subnet --</span>
+                <span class="tag-pill tag-ai" id="overviewDevicesBadge" dir="ltr">0 Devices</span>
+              </div>
+              <p class="kpi-sub" id="overviewRouterModel" dir="ltr">Detecting Router Model...</p>
             </div>
 
-            <div class="glass-card kpi-card">
+            <!-- Security & Throughput Card -->
+            <div class="glass-card kpi-card" style="cursor:pointer" onclick="window.switchTab('cyber')">
               <div class="kpi-head">
-                <span>درع الأمن السيبراني (IDS 24/7)</span>
+                <span data-i18n="kpi_ids">الأمن السيبراني وتدفق الشبكة</span>
                 <span class="kpi-icon amber" data-svg="shield"></span>
               </div>
               <div class="kpi-value-row">
-                <strong id="idsThreatCountVal" class="emerald-text">0 تهديد</strong>
-                <small id="idsSuppressedVal">0 Benign Ignored</small>
+                <strong id="idsThreatCountVal" class="emerald-text">آمن 100%</strong>
+                <small id="netRateVal" dir="ltr">0.0 KB/s</small>
               </div>
-              <div class="progress-rail"><div class="progress-fill emerald" id="idsBar" style="width:100%"></div></div>
-              <p class="kpi-sub">حماية المنافذ المحلية للـ AI من الإنذارات الكاذبة</p>
+              <canvas id="netSparkCanvas" width="260" height="38" class="spark-canvas"></canvas>
+              <p class="kpi-sub" id="arpGuardMiniLabel" dir="ltr">ARP Guard: CLEAN • 0 False Positives</p>
             </div>
           </div>
         </div>
 
-        <!-- Storage & Top Processes Split -->
+        <!-- Global vs Local Router Latency Strip -->
+        <div class="latency-strip glass-card">
+          <div class="latency-title">
+            <span data-svg="wireshark"></span>
+            <strong data-i18n="latency_bar_title">مقارنة زمن الاستجابة اللحظي (الراوتر المحلي مقابل الخوادم العالمية):</strong>
+          </div>
+          <div id="overviewLatencyPills" class="latency-pills-wrap" dir="ltr"></div>
+        </div>
+
         <div class="dual-grid">
           <div class="glass-card">
             <div class="section-head">
               <div>
-                <h3>وحدات التخزين وصحة أقراص NVMe / SSD</h3>
-                <p>قراءة حقيقية للمساحات ونظام الملفات وحالة SMART</p>
+                <h3 data-i18n="disks_title">وحدات التخزين وصحة أقراص NVMe / SSD</h3>
+                <p data-i18n="disks_sub">المساحة المستخدمة والحالة الفيزيائية للأقراص الصلبة</p>
               </div>
-              <button class="btn-mini-action" onclick="window.triggerITTool('deep_junk_cleaner')">تنظيف المؤقتات الآن</button>
+              <button class="btn-mini-action" onclick="window.triggerITTool('deep_junk_cleaner')" data-i18n="btn_clean_temp">تنظيف المؤقتات</button>
             </div>
             <div id="disksContainer" class="disks-list"></div>
           </div>
@@ -246,20 +360,20 @@
           <div class="glass-card">
             <div class="section-head">
               <div>
-                <h3>أعلى العمليات استهلاكاً وتصنيف الموثوقية (AI-Aware)</h3>
-                <p>يميز تلقائياً محركات الذكاء الاصطناعي المحلية ونواة النظام</p>
+                <h3 data-i18n="topprocs_title">أعلى البرامج استهلاكاً للموارد الآن</h3>
+                <p data-i18n="topprocs_sub">عرض مباشر لنسبة المعالج (CPU%) والذاكرة (RAM) لكل عملية</p>
               </div>
-              <button class="btn-mini-action" onclick="window.triggerITTool('ram_working_set_trim')">تحرير الرام الخامل</button>
+              <button class="btn-mini-action" onclick="window.openProcessesSubtab()" data-i18n="btn_all_procs">إدارة كافة العمليات</button>
             </div>
             <div class="table-scroll">
               <table class="cyber-table">
                 <thead>
                   <tr>
-                    <th>PID</th>
-                    <th>العملية</th>
-                    <th>التصنيف الذكي</th>
-                    <th>CPU</th>
-                    <th>الذاكرة</th>
+                    <th dir="ltr">PID</th>
+                    <th data-i18n="th_proc_name">العملية</th>
+                    <th data-i18n="th_category">التصنيف</th>
+                    <th dir="ltr">CPU %</th>
+                    <th dir="ltr">RAM</th>
                   </tr>
                 </thead>
                 <tbody id="topProcsBody"></tbody>
@@ -269,140 +383,166 @@
         </div>
       </section>
 
-      <!-- ==================== TAB 2: IT SUPPORT & OMNI-UPDATE ==================== -->
-      <section class="tab-panel" id="tab-itsupport">
+      <!-- ==================== WORKSPACE 2: COMPLETE LAN DEVICE INVENTORY, BIO-THERMAL MINI RADAR & WIRESHARK ==================== -->
+      <section class="tab-panel" id="tab-network">
         <div class="omni-banner glass-card">
           <div class="omni-banner-info">
-            <span class="eyebrow">AUTONOMOUS IT COMMAND DECK • 23 REAL EXECUTABLE ENGINES</span>
-            <h3>ترسانة الدعم الفني الشامل وتحديث النظام والتطبيقات والتعريفات</h3>
-            <p>كل أيقونة أدناه مرتبطة بمحرك تنفيذي حقيقي (Winget, Microsoft.Update.Session COM, DISM, SFC, PnPUtil, Win32 API) مع تحليل ذكي فوري للمخرجات.</p>
+            <span class="eyebrow">8-PROTOCOL SUBNET DISCOVERY • IP • HOSTNAME • MANUFACTURER • OS • BIO-THERMAL OVERLAY</span>
+            <h3 data-i18n="net_hero_title">الماسح الشامل للأجهزة المتصلة بالشبكة (IP + الاسم + الشركة + النظام) والأجسام الحرارية حول الراوتر</h3>
+            <p id="lanSummaryLine" data-i18n="net_hero_desc">يفحص شبكتك بـ 8 بروتوكولات متوازية (SendARP + NetBIOS + mDNS + LLMNR + SSDP + WSD + X.509 SSL + 420+ IEEE OUI) لكشف كل جهاز متصل وتسميته وتصدير القائمة، مع شاشة مصغرة فورية لرصد الأجسام الحرارية حول الراوتر.</p>
           </div>
-          <div class="omni-banner-buttons">
-            <button class="btn-primary-glow" onclick="window.triggerITTool('omni_update_everything')">
-              <span data-svg="bolt"></span>
-              <span>تحديث كل شيء (البرامج + الويندوز + التعريفات)</span>
-            </button>
-            <button class="btn-secondary-glass" onclick="window.triggerITTool('omni_self_heal')">
-              <span data-svg="sparkles"></span>
-              <span>إصلاح شامل بضغطة واحدة</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Category Filter Pills -->
-        <div class="filter-bar" id="itCategoryBar">
-          <button class="filter-pill active" data-cat="all">الكل (23 أداة)</button>
-          <button class="filter-pill" data-cat="omni">العمليات الخارقة بضغطة</button>
-          <button class="filter-pill" data-cat="updates">تحديث التطبيقات والويندوز</button>
-          <button class="filter-pill" data-cat="drivers">التعريفات والعتاد</button>
-          <button class="filter-pill" data-cat="repair">إصلاح أعطال الويندوز</button>
-          <button class="filter-pill" data-cat="storage">الأقراص وتنظيف المساحة</button>
-          <button class="filter-pill" data-cat="network">إصلاح الشبكة و DNS</button>
-          <button class="filter-pill" data-cat="performance">تسريع الرام والإقلاع</button>
-          <button class="filter-pill" data-cat="bsod">الشاشة الزرقاء والحماية</button>
-        </div>
-
-        <div class="it-layout">
-          <div class="tools-grid" id="itToolsGrid"></div>
-
-          <!-- Live Execution Console & Smart Result Analyzer -->
-          <div class="glass-card execution-console-card">
-            <div class="console-header">
-              <div class="console-dots"><span></span><span></span><span></span></div>
-              <strong>مختبر التنفيذ والتحليل الذكي للمخرجات</strong>
-              <span class="console-status" id="itExecStatusBadge">جاهز للتنفيذ</span>
+          <div class="omni-banner-buttons" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div style="display:flex;gap:6px;align-items:center">
+              <input type="text" id="customProbeIpInput" class="inline-filter-input" dir="ltr" style="width:165px" placeholder="Custom IP (e.g. 192.168.100.1)" />
+              <button class="btn-secondary-glass" onclick="window.probeCustomIP()">
+                <span data-svg="search"></span>
+                <span data-i18n="btn_probe_custom_ip">فحص IP محدد</span>
+              </button>
             </div>
-            <div id="itSmartInsightsBox" class="smart-insights-box">
-              <div class="insight-placeholder">
-                اضغط على أي أيقونة أداة على اليمين لتشغيلها فوراً ومشاهدة التحليل الاستدلالي لنتائج جهازك هنا.
+            <button class="btn-primary-glow" id="btnRescanLan" onclick="window.rescanLanNow(true)">
+              <span data-svg="radar"></span>
+              <span data-i18n="btn_rescan_lan">مسح شامل للشبكة والأجهزة</span>
+            </button>
+            <a href="/api/lan/export.csv" class="btn-secondary-glass" style="text-decoration:none">
+              <span data-svg="download"></span>
+              <span data-i18n="btn_export_csv">تصدير جدول الأجهزة (Excel CSV)</span>
+            </a>
+            <a href="/api/network/export.pcap" class="btn-secondary-glass" style="text-decoration:none">
+              <span data-svg="wireshark"></span>
+              <span data-i18n="btn_export_pcap">تصدير Wireshark (.pcap)</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Network Device Summary Strip -->
+        <div class="rf-kpi-strip">
+          <div class="glass-card net-stat-box">
+            <span data-i18n="lan_kpi_total">إجمالي الأجهزة المتصلة الآن</span>
+            <strong id="lanTotalCountTxt" dir="ltr" class="cyan-text">0</strong>
+            <small id="lanSubnetCidrTxt" dir="ltr">Subnet: --</small>
+          </div>
+          <div class="glass-card net-stat-box">
+            <span data-i18n="lan_kpi_router">طراز الراوتر والبوابة</span>
+            <strong id="lanRouterModelTxt" dir="ltr" style="font-size:1.02rem">--</strong>
+            <small id="lanRouterIpMacTxt" dir="ltr">IP: --</small>
+          </div>
+          <div class="glass-card net-stat-box">
+            <span data-i18n="lan_kpi_trust">الأجهزة الموثوقة / الجديدة</span>
+            <strong id="lanTrustBreakdownTxt" dir="ltr" class="emerald-text">0 Trusted</strong>
+            <small id="lanProtocolsUsedTxt" dir="ltr">SendARP • NetBIOS • mDNS • WSD • SSL</small>
+          </div>
+          <div class="glass-card net-stat-box" style="cursor:pointer;border-color:rgba(251,191,36,0.38)" onclick="window.switchTab('rfsense')">
+            <span data-i18n="lan_kpi_thermal">الأجسام الحرارية حول الراوتر الآن</span>
+            <strong id="lanBioBodiesCountTxt" dir="ltr" class="amber-text">0 Bodies</strong>
+            <small id="lanBioStatusSubTxt" data-i18n="lan_kpi_thermal_sub">اضغط لفتح الرادار الحراري الكامل ➔</small>
+          </div>
+        </div>
+
+        <!-- Interactive Radial Router & Device Map + Selected Device Inspector + Live Mini Bio-Thermal Radar -->
+        <div class="lan-triple-split">
+          <div class="glass-card lan-canvas-card">
+            <div class="section-head" style="margin-bottom:10px">
+              <div>
+                <h3 data-i18n="map_card_title">خريطة الأجهزة المتصلة حول الراوتر (اضغط أي جهاز للتسمية والفحص)</h3>
+                <p id="mapSubtitle" dir="ltr">Gateway: -- | Subnet: --</p>
+              </div>
+              <div class="legend-pills">
+                <span class="tag-pill tag-ai" data-i18n="leg_near">قريب (&lt;3m)</span>
+                <span class="tag-pill tag-sys" data-i18n="leg_mid">متوسط (3-8m)</span>
+                <span class="tag-pill tag-app" data-i18n="leg_far">بعيد (&gt;8m)</span>
               </div>
             </div>
-            <pre class="terminal-output" id="itTerminalOutput">// AEGIS-X Autonomous IT Support Output Stream
-// Ready. Click any tool card to execute natively and inspect kernel results...</pre>
+            <canvas id="lanRadialCanvas" width="680" height="400" class="lan-radial-canvas"></canvas>
+          </div>
+
+          <div class="glass-card device-inspector-card">
+            <div class="section-head">
+              <h3 data-i18n="dev_inspector_title">بطاقة هوية الجهاز والتحكم به</h3>
+              <span class="tag-pill tag-ai" id="selectedDevTypeBadge" dir="ltr">GATEWAY</span>
+            </div>
+            <div id="selectedDeviceDetails" class="device-details-body"></div>
+          </div>
+
+          <!-- Embedded Live Bio-Thermal Radar Preview right inside Network Tab! -->
+          <div class="glass-card mini-thermal-card">
+            <div class="section-head" style="margin-bottom:8px">
+              <div>
+                <h3 data-i18n="mini_thermal_title">كاشف الأجسام الحرارية حول الراوتر</h3>
+                <p id="miniThermalSub" dir="ltr" style="font-size:0.72rem;color:var(--amber)">FLIR RF Bio-Thermal Field (360°)</p>
+              </div>
+              <button class="btn-mini-action" onclick="window.triggerBioWalkDemo()" data-i18n="btn_test_bio">اختبار حركة</button>
+            </div>
+            <canvas id="netMiniThermalCanvas" width="320" height="250" class="lan-radial-canvas" style="cursor:pointer" onclick="window.switchTab('rfsense')"></canvas>
+            <div id="netMiniThermalTargets" class="mini-thermal-targets"></div>
+            <button class="btn-secondary-glass" style="width:100%;justify-content:center;margin-top:8px" onclick="window.switchTab('rfsense')">
+              <span data-svg="wave"></span>
+              <span data-i18n="btn_open_full_thermal">فتح غرفة المسح الحراري الكاملة</span>
+            </button>
           </div>
         </div>
-      </section>
 
-      <!-- ==================== TAB 3: GENIUS DIAGNOSTIC COPILOT ==================== -->
-      <section class="tab-panel" id="tab-copilot">
-        <div class="glass-card copilot-hero">
-          <div class="copilot-header">
-            <div class="copilot-orb-icon" data-svg="brain"></div>
+        <!-- Full Discovered Devices Inventory Table + Instant Search & Filter -->
+        <div class="glass-card">
+          <div class="section-head">
             <div>
-              <span class="eyebrow">DETERMINISTIC CAUSAL OS INTELLIGENCE • ZERO CLOUD LATENCY</span>
-              <h3>العقل التشخيصي العبقري (يفهم شكواك ويربطها بقراءات جهازك الحية فوراً)</h3>
-              <p>اشرح أي مشكلة تواجهك باللهجة العامية أو العربية أو الإنجليزية — سيقوم المحرك بفحص المعالج، الرام، الأقراص، البورتات، وإنذارات الشبكة في نفس اللحظة واقتراح الأداة الدقيقة لتنفيذها بضغطة زر.</p>
+              <h3 data-i18n="lan_table_title">سجل جرد كافة الأجهزة المتصلة بالشبكة (IP + الاسم + الشركة + نظام التشغيل + الموثوقية)</h3>
+              <p data-i18n="lan_table_sub">ابحث أو فلتر حسب نوع الجهاز — اضغط على أي صف لعرض بطاقته الكاملة أو تسميته أو فحص منافذه</p>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <input type="text" id="lanDeviceSearchInput" class="inline-filter-input" style="width:230px" placeholder="ابحث بالـ IP، الاسم، الشركة، MAC..." />
+              <select id="lanDeviceRoleFilter" class="inline-filter-input" style="width:145px">
+                <option value="all">كل الأجهزة (All)</option>
+                <option value="router">الراوتر (Routers)</option>
+                <option value="laptop">الكمبيوترات (PCs)</option>
+                <option value="smartphone">الجوالات (Phones)</option>
+                <option value="tv">الشاشات الذكية (TVs)</option>
+                <option value="untrusted">أجهزة جديدة غير موثقة</option>
+              </select>
             </div>
           </div>
-
-          <div class="copilot-presets">
-            <button class="preset-chip" data-q="الجهاز ثقيل وفيه تعليق واستهلاك رام عالي">الجهاز ثقيل واستهلاك الرام عالي</button>
-            <button class="preset-chip" data-q="ابغى احدث كل التطبيقات والويندوز والتعريفات الناقصة">تحديث كل البرامج والويندوز والتعريفات</button>
-            <button class="preset-chip" data-q="الانترنت بطيء في فتح المواقع وابغى فحص DNS والشبكة بدون ضغط على الراوتر">بطء التصفح ومشاكل DNS والشبكة</button>
-            <button class="preset-chip" data-q="هل جهازي يتعرض لهجوم Nmap او اختراق وهل البورتات المفتوحة آمنة؟">فحص أمني: هل يوجد هجوم أو بورتات خطيرة؟</button>
-            <button class="preset-chip" data-q="تظهر شاشة زرقاء او انهيار مفاجئ للبرامج وملفات تالفة">تحليل الشاشة الزرقاء وإصلاح ملفات النظام</button>
-            <button class="preset-chip" data-q="قرص النظام ممتلئ وابغى فحص صحة SSD وتنظيف المخلفات">امتلاء القرص وفحص عمر الـ SSD</button>
-          </div>
-
-          <form id="copilotForm" class="copilot-input-bar">
-            <input type="text" id="copilotInput" placeholder="اكتب مشكلتك هنا... مثال: الصوت يقطع والتطبيقات قديمة وابغى فحص شامل للجهاز" autocomplete="off" />
-            <button type="submit" class="btn-primary-glow">
-              <span data-svg="sparkles"></span>
-              <span>تشخيص عبقري فوري</span>
-            </button>
-          </form>
-
-          <div id="copilotReportArea" class="copilot-report-area"></div>
-        </div>
-      </section>
-
-      <!-- ==================== TAB 4: WIRESHARK-GRADE ZERO-OVERHEAD NETWORK ==================== -->
-      <section class="tab-panel" id="tab-network">
-        <div class="net-top-strip">
-          <div class="glass-card net-stat-box">
-            <span>المحرك النشط في الخلفية</span>
-            <strong id="netBackendTitle">Wireshark TShark / Pktmon ETW</strong>
-            <small class="emerald-text">Promiscuous Flood: OFF • Router DNS Spam: 0%</small>
-          </div>
-          <div class="glass-card net-stat-box">
-            <span>إجمالي الحزم المحللة</span>
-            <strong id="netTotalPackets">0</strong>
-            <small id="netTotalBytes">0 KB Inspected</small>
-          </div>
-          <div class="glass-card net-stat-box">
-            <span>الجلسات المفتوحة (Socket->PID)</span>
-            <strong id="netActiveSockets">0</strong>
-            <small>مربوطة باسم البرنامج ورقم العملية</small>
-          </div>
-          <div class="glass-card net-stat-box">
-            <span>فلتر العرض الفوري (Wireshark Filter)</span>
-            <input type="text" id="packetFilterInput" class="inline-filter-input" placeholder="فلترة: TCP, TLSv1.3, 11434, SYN, INBOUND..." />
+          <div class="table-scroll" style="max-height:360px">
+            <table class="cyber-table">
+              <thead>
+                <tr>
+                  <th data-i18n="th_dev_name">اسم الجهاز والنوع</th>
+                  <th dir="ltr">IP Address</th>
+                  <th dir="ltr">MAC Address</th>
+                  <th data-i18n="th_vendor">الشركة المصنعة (Manufacturer)</th>
+                  <th data-i18n="th_os_conn">نظام التشغيل والاتصال</th>
+                  <th data-i18n="th_distance">المسافة والاستجابة</th>
+                  <th data-i18n="th_trust">الحالة</th>
+                  <th data-i18n="th_open_ports">المنافذ والبروتوكولات</th>
+                </tr>
+              </thead>
+              <tbody id="lanDevicesTableBody"></tbody>
+            </table>
           </div>
         </div>
 
+        <!-- Wireshark Live Packet & Socket Dissector -->
         <div class="wireshark-split">
-          <!-- Packet Stream Table -->
           <div class="glass-card packet-stream-card">
             <div class="section-head">
               <div>
-                <h3>التدفق المباشر للبكت والطبقات (Live Zero-Overhead Packet Stream)</h3>
-                <p>اضغط على أي حزمة لتشريح طبقاتها (L2/L3/L4/L7) وعرض البايتات الست عشرية (Hex Inspector)</p>
+                <h3 data-i18n="ws_title">مفتش البكتات والجلسات الحية (Wireshark L2-L7 Dissector)</h3>
+                <p id="netBackendTitle" dir="ltr">Direct iphlpapi.dll + TShark Engine</p>
               </div>
-              <div class="stream-controls">
-                <button class="btn-mini-action" id="pauseStreamBtn">إيقاف مؤقت للعرض</button>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <input type="text" id="packetFilterInput" class="inline-filter-input" dir="ltr" placeholder="Filter: TLSv1.3, DNS, 192.168..." />
+                <button class="btn-mini-action" id="pauseStreamBtn" data-i18n="btn_pause_stream">إيقاف مؤقت</button>
               </div>
             </div>
             <div class="table-scroll wireshark-scroll">
               <table class="cyber-table wireshark-table">
                 <thead>
                   <tr>
-                    <th>#</th>
-                    <th>الوقت</th>
-                    <th>المصدر (Source)</th>
-                    <th>الوجهة (Destination)</th>
-                    <th>البروتوكول</th>
-                    <th>الطول</th>
-                    <th>الأعلام / التفاصيل</th>
+                    <th dir="ltr">#</th>
+                    <th data-i18n="th_time">الوقت</th>
+                    <th dir="ltr">Source</th>
+                    <th dir="ltr">Destination</th>
+                    <th dir="ltr">Protocol</th>
+                    <th dir="ltr">Len</th>
+                    <th data-i18n="th_info">التفاصيل والعملية المالكة</th>
                   </tr>
                 </thead>
                 <tbody id="packetTableBody"></tbody>
@@ -410,33 +550,25 @@
             </div>
           </div>
 
-          <!-- Deep Frame Dissector Tree + Hex View -->
           <div class="glass-card dissector-pane">
             <div class="section-head">
-              <div>
-                <h3>مشرح الطبقات العميق (Deep Frame Dissector)</h3>
-                <p>تفكيك البروتوكول والعملية المالكة والـ Hex Header</p>
-              </div>
+              <h3 data-i18n="ws_layers_title">تشريح طبقات الحزمة والـ Hex</h3>
             </div>
-            <div id="frameDissectorTree" class="dissector-tree">
-              <p class="muted-hint">اختر حزمة من الجدول لعرض التشريح الكامل لطبقات الشبكة...</p>
-            </div>
-            <div class="hex-box-title">Wire Header Hexadecimal Dump</div>
-            <pre id="frameHexView" class="hex-dump">45 00 00 3C 1C 46 40 00 40 06 00 00 7F 00 00 01</pre>
+            <div id="frameDissectorTree" class="dissector-tree"></div>
+            <div class="hex-box-title" dir="ltr">Wire Header Hexadecimal + ASCII</div>
+            <pre id="frameHexView" class="hex-dump" dir="ltr">45 00 00 3C 1C 46 40 00 40 06 00 00 7F 00 00 01</pre>
 
-            <div class="section-head" style="margin-top:16px">
-              <div>
-                <h4>خريطة البورتات والبرامج النشطة (Process-to-Socket)</h4>
-              </div>
+            <div class="section-head" style="margin-top:14px">
+              <h4 data-i18n="ws_flows_title">البرامج المتصلة بالشبكة الآن (PID ➔ Socket)</h4>
             </div>
-            <div class="table-scroll" style="max-height:190px">
+            <div class="table-scroll" style="max-height:180px">
               <table class="cyber-table compact">
                 <thead>
                   <tr>
-                    <th>البرنامج (PID)</th>
-                    <th>المحلي</th>
-                    <th>البعيد</th>
-                    <th>التصنيف</th>
+                    <th data-i18n="th_proc_name">البرنامج</th>
+                    <th dir="ltr">Local</th>
+                    <th dir="ltr">Remote</th>
+                    <th data-i18n="th_scope">النطاق</th>
                   </tr>
                 </thead>
                 <tbody id="flowsMiniBody"></tbody>
@@ -446,24 +578,262 @@
         </div>
       </section>
 
-      <!-- ==================== TAB 5: 24/7 ZERO-FALSE-POSITIVE CYBERSECURITY ==================== -->
+      <!-- ==================== WORKSPACE 3: FLIR BIO-THERMAL & WI-FI RF PRESENCE TOMOGRAPHY ==================== -->
+      <section class="tab-panel" id="tab-rfsense">
+        <div class="omni-banner glass-card">
+          <div class="omni-banner-info">
+            <span class="eyebrow">FLIR-STYLE WI-FI RF BIO-THERMAL &amp; DIELECTRIC BODY TOMOGRAPHY (32x32 HIGH-RES)</span>
+            <h3 data-i18n="rf_hero_title">رادار كشف الأجسام الحرارية والحية حول الراوتر (Wi-Fi RF Bio-Thermal Body Scanner)</h3>
+            <p id="rfPhysicsBanner">يرصد الأجسام الحية والحرارية (~65% ماء وبصمة ~37°C) المحيطة بالراوتر عبر قياس امتصاص وتشتت موجات 2.4/5GHz في مناطق فرينل (Fresnel Ellipsoids) باستخدام <code>wlanapi.dll</code> وتقاطع مسارات الأجهزة المتصلة — مع تحديد القطاع والزاوية والمسافة بالمتر وشدة البصمة الحرارية بدون أي كاميرا.</p>
+          </div>
+          <div class="omni-banner-buttons" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <div class="rf-sens-group" dir="ltr">
+              <span style="font-size:0.74rem;color:var(--text-muted);margin-inline-end:4px">RF Gain:</span>
+              <button class="filter-pill" onclick="window.setRfSensitivity(0.7)">0.7x</button>
+              <button class="filter-pill active" id="rfSensDefault" onclick="window.setRfSensitivity(1.0)">1.0x</button>
+              <button class="filter-pill" onclick="window.setRfSensitivity(1.6)">1.6x</button>
+              <button class="filter-pill" onclick="window.setRfSensitivity(2.2)">2.2x Max</button>
+            </div>
+            <button class="btn-secondary-glass" onclick="window.triggerBioWalkDemo()">
+              <span data-svg="sparkles"></span>
+              <span data-i18n="btn_sim_bio_walk">اختبار محاكاة مرور جسم حراري (18s)</span>
+            </button>
+            <button class="btn-primary-glow" onclick="window.calibrateRfRoom()">
+              <span data-svg="radar"></span>
+              <span data-i18n="btn_calibrate_rf">معايرة الغرفة الساكنة (24°C Baseline)</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="rf-kpi-strip">
+          <div class="glass-card net-stat-box">
+            <span data-i18n="rf_state_lbl">حالة الأجسام الحرارية حول الراوتر</span>
+            <strong id="rfPresenceStateTxt" dir="ltr" class="emerald-text">STATIC_CLEAR</strong>
+            <small id="rfConfidenceTxt" dir="ltr">Tracked Bodies: 0 • Confidence: 96%</small>
+          </div>
+          <div class="glass-card net-stat-box">
+            <span data-i18n="rf_rssi_lbl">قوة إشارة الراوتر الحية (RSSI)</span>
+            <strong id="rfCurrentRssiTxt" dir="ltr">-56.0 dBm</strong>
+            <small id="rfBaselineRssiTxt" dir="ltr">Baseline: -56.0 dBm</small>
+          </div>
+          <div class="glass-card net-stat-box">
+            <span data-i18n="rf_entropy_lbl">شدة الامتصاص الحراري/الموجي</span>
+            <strong id="rfEntropyTxt" dir="ltr" class="cyan-text">0.0%</strong>
+            <small id="rfJitterTxt" dir="ltr">Micro-Jitter: 0.00 ms</small>
+          </div>
+          <div class="glass-card net-stat-box">
+            <span data-i18n="rf_band_lbl">القناة والشبكات المحيطة (BSSID)</span>
+            <strong id="rfBandTxt" dir="ltr">5 GHz</strong>
+            <small id="rfLinkRateTxt" dir="ltr">PHY Rate: -- Mbps</small>
+          </div>
+        </div>
+
+        <div class="lan-map-split">
+          <div class="glass-card">
+            <div class="section-head">
+              <div>
+                <h3 data-i18n="rf_heatmap_title">المسح الطيفي الحراري FLIR للأجسام حول الراوتر (32×32 Bio-Thermal Field)</h3>
+                <p data-i18n="rf_heatmap_sub">التدرج اللوني الحراري (أزرق بارد 24°C ➔ بنفسجي ➔ برتقالي ➔ أحمر/أبيض ساخن 37°C) يحدد موقع ومسافة الأجسام الحية الماصة للموجة حول الراوتر</p>
+              </div>
+              <div class="flir-scale-bar" dir="ltr">
+                <span>24°C Cold</span>
+                <div class="flir-gradient-strip"></div>
+                <span>37°C Bio-Core</span>
+              </div>
+            </div>
+            <canvas id="rfHeatmapCanvas" width="720" height="430" class="lan-radial-canvas"></canvas>
+          </div>
+
+          <div class="glass-card" style="display:flex;flex-direction:column;gap:12px">
+            <div>
+              <h4 style="font-size:0.9rem;margin-bottom:7px;color:#ff8fa3" data-i18n="rf_bodies_list_title">🎯 الأجسام الحرارية/الحية المتتبعة الآن حول الراوتر</h4>
+              <div id="rfBioTargetsList" class="disks-list" style="max-height:145px;overflow-y:auto"></div>
+            </div>
+
+            <div>
+              <h3 style="font-size:0.88rem;margin-bottom:5px" data-i18n="rf_wave_title">المخطط الموجي الحي للامتصاص والاضطراب</h3>
+              <canvas id="rfWaveCanvas" width="440" height="95" class="spark-canvas" style="height:95px;background:rgba(3,7,18,0.8);border:1px solid rgba(0,240,255,0.15)"></canvas>
+            </div>
+
+            <div>
+              <h4 style="font-size:0.84rem;margin-bottom:6px;color:var(--cyan)" data-i18n="rf_rays_title">أشعة الاستشعار للأجهزة المتصلة والشبكات المجاورة</h4>
+              <div id="rfLinksList" class="disks-list" style="max-height:125px;overflow-y:auto"></div>
+            </div>
+
+            <div>
+              <h4 style="font-size:0.84rem;margin-bottom:6px;color:var(--amber)" data-i18n="rf_events_title">سجل الرصد الحراري والحركي</h4>
+              <div id="rfEventsList" class="disks-list" style="max-height:95px;overflow-y:auto"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== WORKSPACE 4: UNIFIED SYSTEM REPAIR, 80 TOOLS, PROCESSES & STARTUP ==================== -->
+      <section class="tab-panel" id="tab-itsupport">
+        <div class="subtab-bar glass-card">
+          <button class="subtab-btn active" data-subtab="sub-tools" onclick="window.switchRepairSubtab('sub-tools')">
+            <span data-svg="wrench"></span>
+            <span data-i18n="sub_tools">ترسانة الصيانة والتحديث (80 أداة)</span>
+          </button>
+          <button class="subtab-btn" data-subtab="sub-procs" onclick="window.switchRepairSubtab('sub-procs')">
+            <span data-svg="cpu"></span>
+            <span data-i18n="sub_procs">مدير العمليات والـ CPU/RAM الحي</span>
+          </button>
+          <button class="subtab-btn" data-subtab="sub-startup" onclick="window.switchRepairSubtab('sub-startup')">
+            <span data-svg="rocket"></span>
+            <span data-i18n="sub_startup">برامج الإقلاع ومحلل المساحة</span>
+          </button>
+          <button class="subtab-btn" data-subtab="sub-prereq" onclick="window.switchRepairSubtab('sub-prereq')">
+            <span data-svg="layers"></span>
+            <span data-i18n="sub_prereq">فحص وتثبيت المحركات (8 محركات)</span>
+          </button>
+        </div>
+
+        <!-- SUBTAB A: 80 SILENT TOOLS -->
+        <div id="sub-tools" class="repair-subpanel active">
+          <div class="it-search-filter-row">
+            <input type="text" id="itSearchInput" class="it-search-box" placeholder="ابحث في الـ 80 أداة... (مثال: راوتر، BSSID، جيران الشبكة، طابعة، صوت، شاشة زرقاء، Winget، NVMe SMART، نقطة استعادة)" />
+            <div class="filter-bar" id="itCategoryBar">
+              <button class="filter-pill active" data-cat="all" data-i18n="cat_all">الكل (80)</button>
+              <button class="filter-pill" data-cat="omni" data-i18n="cat_omni">العمليات الشاملة</button>
+              <button class="filter-pill" data-cat="updates" data-i18n="cat_updates">التحديثات</button>
+              <button class="filter-pill" data-cat="drivers" data-i18n="cat_drivers">التعريفات والعتاد</button>
+              <button class="filter-pill" data-cat="repair" data-i18n="cat_repair">إصلاح الويندوز</button>
+              <button class="filter-pill" data-cat="storage" data-i18n="cat_storage">الأقراص والمساحة</button>
+              <button class="filter-pill" data-cat="network" data-i18n="cat_network">الشبكة و DNS</button>
+              <button class="filter-pill" data-cat="performance" data-i18n="cat_perf">الأداء والرام</button>
+              <button class="filter-pill" data-cat="gaming" data-i18n="cat_gaming">الألعاب FPS</button>
+              <button class="filter-pill" data-cat="privacy" data-i18n="cat_privacy">الخصوصية</button>
+              <button class="filter-pill" data-cat="bsod" data-i18n="cat_bsod">الشاشة الزرقاء والحماية</button>
+            </div>
+          </div>
+
+          <div class="it-layout">
+            <div class="tools-grid" id="itToolsGrid"></div>
+
+            <div class="glass-card execution-console-card">
+              <div class="console-header">
+                <div class="console-dots"><span></span><span></span><span></span></div>
+                <strong data-i18n="console_title">سجل التنفيذ الصامت والتحليل الهندسي</strong>
+                <span class="console-status" id="itExecStatusBadge" dir="ltr">SILENT READY</span>
+              </div>
+              <div id="itSmartInsightsBox" class="smart-insights-box" data-i18n="console_hint">
+                اضغط على أي أداة لتشغيلها بصمت تام في الخلفية بدون أي نافذة سوداء ومشاهدة النتيجة الفورية هنا.
+              </div>
+              <pre class="terminal-output" id="itTerminalOutput" dir="ltr">// AEGIS-X v9.0 SOVEREIGN ULTRA Silent Execution Output
+// Zero Console Popups • Zero Audio • Adaptive Eco-Standby
+// Select any of the 80 native tools to execute...</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBTAB B: LIVE PROCESS & CPU/RAM CONTROLLER -->
+        <div id="sub-procs" class="repair-subpanel" style="display:none">
+          <div id="procActionBanner" class="lab-result-banner" style="display:none;margin-bottom:14px"></div>
+          <div class="glass-card">
+            <div class="section-head">
+              <input type="text" id="procFilterInput" class="it-search-box" style="max-width:420px" placeholder="ابحث باسم العملية أو رقم PID..." />
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn-primary-glow" onclick="window.instantRamTrim()" data-i18n="top_ram_btn">تحرير الذاكرة (0.1s)</button>
+                <button class="btn-secondary-glass" onclick="window.loadLiveProcesses()" data-i18n="btn_refresh">تحديث القائمة</button>
+              </div>
+            </div>
+            <div class="table-scroll" style="max-height:520px">
+              <table class="cyber-table">
+                <thead>
+                  <tr>
+                    <th dir="ltr">PID</th>
+                    <th data-i18n="th_proc_name">اسم العملية</th>
+                    <th data-i18n="th_category">التصنيف</th>
+                    <th dir="ltr">Threads</th>
+                    <th dir="ltr">CPU %</th>
+                    <th dir="ltr">RAM (MB)</th>
+                    <th data-i18n="th_action">إجراء</th>
+                  </tr>
+                </thead>
+                <tbody id="fullProcsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBTAB C: STARTUP REGISTRY & SPACE HOGS -->
+        <div id="sub-startup" class="repair-subpanel" style="display:none">
+          <div class="dual-grid">
+            <div class="glass-card">
+              <div class="section-head">
+                <div>
+                  <h3 data-i18n="startup_title">برامج الإقلاع التلقائي مع الويندوز</h3>
+                  <p data-i18n="startup_sub">عطّل أو احذف البرامج غير الضرورية لتسريع تشغيل الجهاز</p>
+                </div>
+                <button class="btn-mini-action" onclick="window.loadStartupAndSpace()" data-i18n="btn_refresh">تحديث</button>
+              </div>
+              <div class="table-scroll" style="max-height:440px">
+                <table class="cyber-table">
+                  <thead>
+                    <tr>
+                      <th data-i18n="th_proc_name">البرنامج</th>
+                      <th data-i18n="th_path">المسار</th>
+                      <th dir="ltr">Hive</th>
+                      <th data-i18n="th_action">إجراء</th>
+                    </tr>
+                  </thead>
+                  <tbody id="startupTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="glass-card">
+              <div class="section-head">
+                <div>
+                  <h3 data-i18n="hogs_title">أضخم الملفات المستهلكة للمساحة</h3>
+                  <p data-i18n="hogs_sub">فحص فوري لأكبر الملفات في مجلدات المستخدم</p>
+                </div>
+                <button class="btn-mini-action" onclick="window.triggerITTool('browser_cache_vacuum')" data-i18n="btn_clean_browser">تنظيف كاش المتصفح</button>
+              </div>
+              <div id="spaceHogsList" class="disks-list" style="max-height:440px;overflow-y:auto"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBTAB D: PREREQUISITES & ENGINE BOOTSTRAPPER -->
+        <div id="sub-prereq" class="repair-subpanel" style="display:none">
+          <div id="prereqTabGrid" class="prereq-grid"></div>
+        </div>
+      </section>
+
+      <!-- ==================== WORKSPACE 5: 24/7 ZERO-FP CYBERSECURITY & ROUTER SECURITY AUDIT ==================== -->
       <section class="tab-panel" id="tab-cyber">
+        <!-- Router Security Audit Card -->
+        <div class="glass-card router-security-banner">
+          <div class="rsb-main">
+            <span class="eyebrow">AUTOMATIC GATEWAY &amp; ROUTER VULNERABILITY AUDITOR</span>
+            <h3 id="cyberRouterHeadline">تقرير الفحص الأمني لبوابة الراوتر</h3>
+            <p id="cyberRouterCertInfo" dir="ltr" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--cyan);margin:4px 0"></p>
+            <ul id="cyberRouterVulnsList" class="router-vuln-list"></ul>
+          </div>
+          <div class="rsb-score-box">
+            <span data-i18n="router_sec_lbl">أمان البوابة</span>
+            <strong id="cyberRouterScoreNum" dir="ltr">96/100</strong>
+            <small id="cyberRouterGradeTxt" dir="ltr" class="emerald-text">A+ HARDENED</small>
+          </div>
+        </div>
+
         <div class="cyber-hero-grid">
-          <!-- Live Animated SVG Cyber Radar -->
           <div class="glass-card cyber-radar-card">
             <div class="radar-visual">
               <svg viewBox="0 0 240 240" class="cyber-radar-svg">
-                <circle cx="120" cy="120" r="102" class="radar-ring" />
-                <circle cx="120" cy="120" r="72" class="radar-ring" />
-                <circle cx="120" cy="120" r="42" class="radar-ring" />
-                <line x1="18" y1="120" x2="222" y2="120" class="radar-axis" />
-                <line x1="120" y1="18" x2="120" y2="222" class="radar-axis" />
+                <circle cx="120" cy="120" r="104" class="radar-ring" />
+                <circle cx="120" cy="120" r="74" class="radar-ring" />
+                <circle cx="120" cy="120" r="44" class="radar-ring" />
+                <line x1="16" y1="120" x2="224" y2="120" class="radar-axis" />
+                <line x1="120" y1="16" x2="120" y2="224" class="radar-axis" />
                 <g class="radar-sweep-group">
-                  <path d="M120,120 L120,18 A102,102 0 0,1 208,69 Z" fill="url(#radarSweepGrad)" />
+                  <path d="M120,120 L120,16 A104,104 0 0,1 210,68 Z" fill="url(#radarSweepGrad)" />
                 </g>
                 <defs>
                   <radialGradient id="radarSweepGrad" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="rgba(0, 240, 255, 0.42)" />
+                    <stop offset="0%" stop-color="rgba(0, 240, 255, 0.45)" />
                     <stop offset="100%" stop-color="rgba(0, 240, 255, 0.0)" />
                   </radialGradient>
                 </defs>
@@ -472,101 +842,128 @@
               </svg>
             </div>
             <div class="radar-copy">
-              <span class="eyebrow">24/7 ZERO-FALSE-POSITIVE INTRUSION DETECTION ENGINE</span>
-              <h3>حارس الأمن السيبراني الدقيق (0% إيجابيات كاذبة — 0% مجاملة)</h3>
-              <p>مصمم هندسياً ليميز بدقة رياضية بين <strong>الذكاء الاصطناعي المحلي والمبرمجين</strong> (Ollama 11434, LM Studio 1234, vLLM 8000, Docker, WSL) وبين <strong>الهجمات الحقيقية</strong> مثل مسح Nmap (`-sS`, `-sT`, `-sV`, `-sX` Xmas, `Win=1024`).</p>
-
+              <span class="eyebrow">24/7 ZERO-FALSE-POSITIVE IDS &amp; ACTIVE IPS</span>
+              <h3 data-i18n="cyber_radar_title">درع كشف الاختراقات ومسح المنافذ (0% إنذارات كاذبة)</h3>
+              <p data-i18n="cyber_radar_desc">معزول رياضياً ضد الإنذارات الكاذبة: لا ينزعج من التصفح أو الألعاب أو الذكاء الاصطناعي المحلي (Ollama / LM Studio)، ويرصد فوراً مسح المنافذ الحقيقي لـ Nmap وتسميم ARP بدون أي رنين صوتي مزعج.</p>
               <div class="cyber-counters-row">
                 <div class="c-stat">
-                  <span>الحزم المفحوصة</span>
-                  <strong id="cyberEvaluatedCount">0</strong>
+                  <span data-i18n="c_stat_eval">الحزم المفحوصة</span>
+                  <strong id="cyberEvaluatedCount" dir="ltr">0</strong>
                 </div>
                 <div class="c-stat">
-                  <span>عمليات آمنة تم استثناؤها (AI/Dev)</span>
-                  <strong class="cyan-text" id="cyberBenignCount">0</strong>
+                  <span data-i18n="c_stat_benign">اتصالات آمنة مستثناة</span>
+                  <strong class="cyan-text" id="cyberBenignCount" dir="ltr">0</strong>
                 </div>
                 <div class="c-stat">
-                  <span>الهجمات الحقيقية المؤكدة</span>
-                  <strong class="danger-text" id="cyberConfirmedCount">0</strong>
+                  <span data-i18n="c_stat_threats">هجمات حقيقية مؤكدة</span>
+                  <strong class="danger-text" id="cyberConfirmedCount" dir="ltr">0</strong>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Live Verification Lab (Prove Zero False Positive vs Real Nmap!) -->
           <div class="glass-card verification-lab-card">
-            <span class="eyebrow">LIVE PROOF-OF-ACCURACY LAB • اختبر الصدق بنفسك عملياً الآن</span>
-            <h3>مختبر التحقق الحي (اختبر الفرق بين تشغيل AI محلي وهجوم Nmap حقيقي)</h3>
-            <p>اضغط الأزرار أدناه لتنفيذ حركة مرور حقيقية على السوكت الفعلي ومشاهدة دقة المحرك بدون أي مجاملة:</p>
-
+            <span class="eyebrow">LIVE VERIFICATION LAB</span>
+            <h3 data-i18n="lab_title">مختبر التحقق العملي (تأكد بنفسك من دقة الكشف)</h3>
             <div class="lab-buttons">
               <button class="btn-lab-safe" onclick="window.runCyberLab('benign_local_ai')">
                 <span data-svg="check-circle"></span>
                 <div>
-                  <strong>1. اختبار تشغيل AI محلي (Ollama Port 11434)</strong>
-                  <small>يرسل 12 جلسة استدلال حقيقية — يجب أن تكون النتيجة: 0 إنذار كاذب!</small>
+                  <strong data-i18n="lab_btn1_t">1. اختبار تشغيل ذكاء اصطناعي محلي كثيف (Ollama :11434)</strong>
+                  <small data-i18n="lab_btn1_s">يرسل 12 جلسة استدلال — النتيجة الحتمية: 0 إنذارات كاذبة!</small>
                 </div>
               </button>
 
               <button class="btn-lab-danger" onclick="window.runCyberLab('real_nmap_scan')">
                 <span data-svg="alert-triangle"></span>
                 <div>
-                  <strong>2. تنفيذ هجوم مسح Nmap حقيقي (`nmap -sT -T4`)</strong>
-                  <small>يشغل أداة Nmap الحقيقية على المنافذ — سيكشفه المحرك فوراً ويرسل تنبيهاً!</small>
+                  <strong data-i18n="lab_btn2_t">2. اختبار مسح Nmap متعدد المنافذ (6 منافذ فعلية)</strong>
+                  <small data-i18n="lab_btn2_s">يلتقط الهجوم في أقل من ثانية بثقة 98%+ وبصمت تام!</small>
                 </div>
               </button>
 
               <button class="btn-lab-stealth" onclick="window.runCyberLab('stealth_xmas_syn_scan')">
                 <span data-svg="radar"></span>
                 <div>
-                  <strong>3. اختبار مسح خفي Nmap Stealth SYN + Xmas (`Win=1024`)</strong>
-                  <small>يختبر كشف البصمة الجنائية لحزم SYN نصف المفتوحة وأعلام FIN+PSH+URG</small>
+                  <strong data-i18n="lab_btn3_t">3. محاكاة هجوم خفي Nmap Stealth SYN + Xmas على شبكتك</strong>
+                  <small data-i18n="lab_btn3_s">يكتشف حزم Win=1024 المشبوهة ضمن نطاق شبكتك الفعلي ويتيح حظر المهاجم!</small>
                 </div>
               </button>
             </div>
-
-            <div id="labResultBanner" class="lab-result-banner">
-              جاهز للاختبار العملي المباشر. يمكنك أيضاً فتح الطرفية وتشغيل <code>nmap 127.0.0.1 -p 2323,4444,5901,6379</code> بنفسك!
+            <div id="labResultBanner" class="lab-result-banner" data-i18n="lab_ready">
+              جاهز للاختبار المباشر (صفر نوافذ منبثقة • صفر أصوات مزعجة).
             </div>
           </div>
         </div>
 
         <div class="dual-grid">
-          <!-- Confirmed Intrusion Alerts Feed -->
           <div class="glass-card">
             <div class="section-head">
               <div>
-                <h3>سجل الهجمات المؤكدة وأمر الحظر الفوري (Confirmed Intrusion Alerts)</h3>
-                <p>لا يظهر هنا أي تنبيه إلا بعد تجاوز درجة ثقة ≥ 92% واجتياز فلاتر عدم الإزعاج</p>
+                <h3 data-i18n="alerts_box_title">سجل الهجمات المؤكدة والعزل الفوري في الجدار الناري</h3>
+                <p data-i18n="alerts_box_sub">اضغط حظر المهاجم لعزله فوراً في Windows Firewall</p>
               </div>
-              <button class="btn-mini-action" onclick="window.clearCyberAlerts()">تصفير السجل</button>
+              <button class="btn-mini-action" onclick="window.clearCyberAlerts()" data-i18n="btn_clear_log">تصفير السجل</button>
             </div>
             <div id="cyberAlertsList" class="alerts-list"></div>
           </div>
 
-          <!-- Zero-FP Whitelisted Local AI & Canary Sensors -->
           <div class="glass-card">
             <div class="section-head">
               <div>
-                <h3>درع عدم الإزعاج (Zero-FP Immune AI/Dev Ports &amp; Canary Traps)</h3>
-                <p>الخدمات المحلية المحمية من الإنذارات الكاذبة + مصائد الاستطلاع النشطة</p>
+                <h3 data-i18n="arp_box_title">حارس جدول ARP والمنافذ المحمية</h3>
+                <p data-i18n="arp_box_sub">يكشف انتحال عنوان الماك للراوتر (MITM ARP Spoofing)</p>
               </div>
             </div>
-            <div id="canaryBadgesBox" class="canary-badges-box"></div>
-            <div class="table-scroll">
+            <div id="arpTableBox" class="canary-badges-box" dir="ltr"></div>
+            <div id="canaryBadgesBox" class="canary-badges-box" dir="ltr"></div>
+            <div class="table-scroll" style="max-height:200px">
               <table class="cyber-table">
                 <thead>
                   <tr>
-                    <th>المنفذ</th>
-                    <th>البرنامج</th>
-                    <th>الدور الوظيفي</th>
-                    <th>سياسة المحرك</th>
+                    <th dir="ltr">Port</th>
+                    <th data-i18n="th_proc_name">البرنامج</th>
+                    <th data-i18n="th_role">الوظيفة</th>
+                    <th data-i18n="th_status">الحالة</th>
                   </tr>
                 </thead>
                 <tbody id="whitelistTableBody"></tbody>
               </table>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- ==================== WORKSPACE 6: DEEP FORENSIC COPILOT ==================== -->
+      <section class="tab-panel" id="tab-copilot">
+        <div class="glass-card copilot-hero">
+          <div class="copilot-header">
+            <div class="copilot-orb-icon" data-svg="brain"></div>
+            <div>
+              <span class="eyebrow">LIVE KERNEL &amp; ROUTER FORENSIC INTELLIGENCE</span>
+              <h3 data-i18n="cop_title">المستشار الجنائي الذكي (يربط سؤالك بقراءات المعالج والرام والراوتر الحقيقية)</h3>
+              <p data-i18n="cop_sub">اسأل عن أي مشكلة في جهازك أو شبكتك — يفحص المحرك فوراً أعلى عملية تستهلك المعالج/الرام، حالة الراوتر وشهادته، استجابة الشبكة، ويمنحك أزرار الحل المباشر.</p>
+            </div>
+          </div>
+
+          <div class="copilot-presets">
+            <button class="preset-chip" data-q="افحص الراوتر ونطاق الشبكة والأجهزة المتصلة الآن">فحص الراوتر ونطاق الشبكة والأجهزة المتصلة</button>
+            <button class="preset-chip" data-q="الجهاز ثقيل واستهلاك المعالج والرام مرتفع جداً من السبب؟">تحليل سبب ارتفاع المعالج والرام وثقل الجهاز</button>
+            <button class="preset-chip" data-q="افحص موجات الراديو في الراوتر وحركة الأجسام في الغرفة">تحليل موجات الراوتر والاستشعار الراديوي RF</button>
+            <button class="preset-chip" data-q="عندي تقطيع فريمات في الألعاب وبنق متذبذب">إصلاح تقطيع الفريمات وتقليل البنق في الألعاب</button>
+            <button class="preset-chip" data-q="هل الراوتر أو جهازي معرض للاختراق أو مسح Nmap؟">فحص الاختراق وثغرات الراوتر ودرع الخصوصية</button>
+            <button class="preset-chip" data-q="ابغى احدث كل التطبيقات والويندوز والتعريفات بصمت">تحديث كافة البرامج والويندوز والتعريفات</button>
+          </div>
+
+          <form id="copilotForm" class="copilot-input-bar">
+            <input type="text" id="copilotInput" placeholder="اكتب سؤالك أو المشكلة التي تواجهها... / Ask any OS, Router, or Security question..." autocomplete="off" />
+            <button type="submit" class="btn-primary-glow">
+              <span data-svg="sparkles"></span>
+              <span data-i18n="btn_diagnose_now">تحليل جنائي فوري</span>
+            </button>
+          </form>
+
+          <div id="copilotReportArea" class="copilot-report-area"></div>
         </div>
       </section>
     </main>
